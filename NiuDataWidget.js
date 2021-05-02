@@ -234,11 +234,12 @@ function addMapArea() { // add the map area for medium size.
 			mapImageContext.opaque = true
 			mapImageContext.size = mapImage.size;
 			mapImageContext.drawImageAtPoint(mapImage, new Point(0, 0))
+			mapImageContext.setFillColor(new Color("#EAEAEA"))
+			mapImageContext.fillRect(new Rect(0, 0, mapImage.size.width, 80))
 			mapImageContext.setFont(Font.systemFont(24))
 			mapImageContext.setTextAlignedRight()
-			mapImageContext.setTextColor(new Color(colors.text.primary))
-			mapImageContext.textOpacity = 0.6
-			mapImageContext.drawText(location, new Point(20, 20))
+			mapImageContext.setTextColor(new Color("#898989"))
+			mapImageContext.drawText(location, new Point(20, 10))
 
 			let mapImageObj = column_right.addImage(mapImageContext.getImage());
 
