@@ -176,7 +176,7 @@ function addMapArea() { // add the map area for medium size.
 	if (!hide_map && niu_data.longitude != -1 && niu_data.latitude != -1) {
 		// only if we have everything we need, otherwise leave the medium size as is.
 
-		const mapZoomLevel = 10;
+		const mapZoomLevel = 15;
 
 		theme.medium.draw = async function (widget, niu_data, colors) {
 			widget.setPadding(5, 5, 5, 5);
