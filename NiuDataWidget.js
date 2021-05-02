@@ -10,7 +10,6 @@
 
 {
 	var show_data_age = false; // show how stale the data is
-	var custom_theme = ""; // if you want to load a theme (some available themes are "3d")
 	var hide_map = false;
 	var username = "";
 	var password = ""; //md5(password)
@@ -88,7 +87,6 @@ if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
 
 var niu_data = {
 	source: "Unknown",
-	theme: custom_theme,
 	last_contact: "",
 	data_is_stale: false, // if the data is especially old (> 2 hours)
 	usable_battery_level: -1,
@@ -576,16 +574,6 @@ async function createWidget(niu_data, colors) {
 	if (!td_theme.isDirectory(theme_file)) {
 		// create the directory
 		td_theme.createDirectory(theme_file);
-	}
-
-	if (custom_theme != "" || custom_theme != null) {
-		// load a custom theme
-		theme_file = td_theme.joinPath(td_theme.documentsDirectory(), "niu_data/" + custom_theme + ".js");
-
-		if (td_theme.fileExists(theme_file)) {
-			td_theme.downloadFileFromiCloud(theme_file);
-			eval(td_theme.readString(theme_file));
-		}
 	}
 
 	let w = new ListWidget()
