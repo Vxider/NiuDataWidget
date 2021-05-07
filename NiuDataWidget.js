@@ -200,10 +200,10 @@ function addMapArea() { // add the map area for medium size.
 
 			roundedLat = Math.round(niu_data.latitude * 2000) / 2000;
 			roundedLong = Math.round(niu_data.longitude * 2000) / 2000;
-			storedFile = "niu_map" + roundedLat * 2000 + "!" + roundedLong * 2000 + ".image";
+			storedFile = "niu_widget_map" + roundedLat * 2000 + "!" + roundedLong * 2000 + ".image";
 
-			let map_image_manager = FileManager.local(); // change this to iCloud for debugging if needed
-			map_image_file = map_image_manager.joinPath(map_image_manager.documentsDirectory(), storedFile);
+			let map_image_manager = FileManager.local();
+			let map_image_file = map_image_manager.joinPath(map_image_manager.cacheDirectory(), storedFile);
 			if (map_image_manager.fileExists(map_image_file)) {
 				// load old map from disk
 				mapImage = await map_image_manager.readImage(map_image_file);
@@ -705,19 +705,17 @@ async function loadNiuData() {
 	if (username != null && username != "" && password != null && password != "" && sn != null && sn != "") {
 
 		var backupManager = FileManager.local();
-		var backupLocation = backupManager.joinPath(backupManager.libraryDirectory(), "niu_data.txt")
+		var backupLocation = backupManager.joinPath(backupManager.cacheDirectory(), "niu_widget_last_updated.txt")
 
 		try {
 			var token = await loadToken();
 			var json = await fetchNiuData(token);
-			if (json.response == null) {
-				var jsonExport = JSON.stringify(json);
-				backupManager.writeString(backupLocation, jsonExport);
-			}
-			else if (json.status == 1131) {
+			if (json.status == 1131) {
 				var token = await loadToken(true);
 				var json = await fetchNiuData(token);
 			}
+			var jsonExport = JSON.stringify(json);
+			backupManager.writeString(backupLocation, jsonExport);
 			parseCarData(json);
 		} catch (e) {
 			// offline, grab the backup copy
@@ -729,7 +727,7 @@ async function loadNiuData() {
 			return e;
 		}
 	} else {
-		niu_data = getSampleData(); // the user hasn't provided a url, so we'll show sample data
+		niu_data = getSampleData();
 	}
 	return "ok";
 }
