@@ -97,6 +97,8 @@ var niu_data = {
 	time_to_charge: 10000,
 	longitude: -1,
 	latitude: -1,
+	gps: 0,
+	gsm: 0,
 	lastTrack_ridingTime: 0,
 	lastTrack_distance: 0,
 	battery_connected: false
@@ -117,6 +119,7 @@ var theme = {
 			widget.backgroundColor = new Color(colors.background)
 			theme.drawCarStatus(widget, niu_data, colors, widgetSize);
 			theme.drawCarName(widget, niu_data, colors, widgetSize);
+			theme.drawCarInfo(widget, niu_data, colors, widgetSize);
 			theme.drawStatusLights(widget, niu_data, colors, widgetSize);
 			theme.drawRangeInfo(widget, niu_data, colors, widgetSize);
 			theme.drawBatteryBar(widget, niu_data, colors, widgetSize);
@@ -190,6 +193,7 @@ function addMapArea() { // add the map area for medium size.
 
 			theme.drawCarStatus(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawCarName(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawCarInfo(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawStatusLights(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawRangeInfo(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawBatteryBar(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
@@ -343,7 +347,7 @@ theme.drawCarStatus = function (widget, niu_data, colors, widgetSize) {
 
 theme.drawCarName = function (widget, niu_data, colors, widgetSize) {
 	let stack = widget.addStack();
-	stack.size = new Size(widgetSize.width, widgetSize.height * 0.25);
+	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
 	stack.centerAlignContent();
 	stack.setPadding(0, 3, 5, 3);
 
@@ -354,9 +358,33 @@ theme.drawCarName = function (widget, niu_data, colors, widgetSize) {
 	carName.minimumScaleFactor = 0.5
 }
 
+theme.drawCarInfo = function (widget, niu_data, colors, widgetSize) {
+	let stack = widget.addStack();
+	stack.size = new Size(widgetSize.width, widgetSize.height * 0.13);
+	stack.centerAlignContent();
+	stack.setPadding(3, 0, 3, 0);
+
+	var carInfoText = "GPS ";
+	for (i = 0; i < niu_data.gps; i++)
+		carInfoText = carInfoText + "•";
+	for (i = niu_data.gps; i < 5; i++)
+		carInfoText = carInfoText + "◦";
+	carInfoText = carInfoText + "  GSM ";
+	for (i = 0; i < niu_data.gsm ; i++)
+		carInfoText = carInfoText + "•";
+	for (i = niu_data.gsm; i < 5; i++)
+		carInfoText = carInfoText + "◦";
+
+	let carInfo = stack.addText(carInfoText);
+	carInfo.centerAlignText()
+	carInfo.font = Font.semiboldSystemFont(12)
+	carInfo.textColor = new Color(colors.icons.default);
+	carInfo.minimumScaleFactor = 0.5
+}
+
 theme.drawStatusLights = function (widget, niu_data, colors, widgetSize) {
 	let stack = widget.addStack();
-	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
+	stack.size = new Size(widgetSize.width, widgetSize.height * 0.15);
 	stack.setPadding(3, 10, 3, 10);
 	stack.backgroundColor = new Color(colors.background_status);;
 	stack.cornerRadius = 3;
@@ -399,9 +427,9 @@ theme.drawStatusLights = function (widget, niu_data, colors, widgetSize) {
 
 theme.drawRangeInfo = function (widget, niu_data, colors, widgetSize) {
 	let stack = widget.addStack();
-	stack.size = new Size(widgetSize.width, widgetSize.height * 0.15);
+	stack.size = new Size(widgetSize.width, widgetSize.height * 0.13);
 	stack.centerAlignContent();
-	stack.setPadding(5, 10, 0, 10);
+	stack.setPadding(3, 10, 0, 10);
 
 	if (niu_data.usable_battery_level > -1) {
 		let batteryCurrentChargePercentTxt = "";
@@ -458,7 +486,7 @@ theme.drawRangeInfo = function (widget, niu_data, colors, widgetSize) {
 
 theme.drawBatteryBar = function (widget, niu_data, colors, widgetSize) {
 	let stack = widget.addStack();
-	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
+	stack.size = new Size(widgetSize.width, widgetSize.height * 0.15);
 	stack.topAlignContent();
 	stack.setPadding(3, 0, 0, 0);
 
@@ -471,7 +499,7 @@ var battery_bar = { // battery bar draw functions
 	batteryPath: new Path(),
 	batteryPathInset: new Path(),
 	width: widgetSize.width - 6,
-	height: 18,
+	height: 15,
 	init: function () {
 	},
 	draw: function (niu_data, colors, widgetSize) {
@@ -677,6 +705,8 @@ function parseCarData(json) {
 		niu_data.car_state = "disconnected";
 	else
 		niu_data.car_state = "acc_off"
+	niu_data.gps = json.data.gps;
+	niu_data.gsm = Math.ceil(json.data.gsm / 6);
 	niu_data.fortification_on = (json.data.isFortificationOn == 1);
 	niu_data.time_to_charge = json.data.leftTime;
 	niu_data.longitude = json.data.postion.lng;
@@ -788,7 +818,9 @@ function getSampleData() {
 		"last_contact": "10m ago",
 		"lastTrack_ridingTime": 0,
 		"lastTrack_distance": 0,
-		"battery_connected": true
+		"battery_connected": true,
+		"gps": 0,
+		"gsm": 0
 	}
 }
 
