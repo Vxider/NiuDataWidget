@@ -388,7 +388,7 @@ theme.drawStatusLights = function (widget, niu_data, colors, widgetSize) {
 
 { // helper functions to draw things for status lights
 	theme.getShieldIcon = function () {
-		return SFSymbol.named("lock.shield").image;
+		return SFSymbol.named("lock.shield.fill").image;
 	}
 
 	theme.getlastTrackIcon = function () {
