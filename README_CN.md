@@ -2,7 +2,7 @@
 
 [[English](README.md)] [[中文](README_CN.md)]
 
-Scriptable小牛电动车信息小组件
+Scriptable小牛电动车信息显示小组件
 
 <img src="screenshots/screen_001.jpeg" width="400" /> &nbsp; 
 <img src="screenshots/screen_002.jpeg" width="400" /> &nbsp;

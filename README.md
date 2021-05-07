@@ -2,7 +2,7 @@
 
 [[English](README.md)] [[中文](README_CN.md)]
 
-A Scriptable widget to pull NIU data from on your iPhone. 
+A Scriptable widget to display NIU electric scooter data on your iPhone. 
 
 <img src="screenshots/screen_001.jpeg" width="400" /> &nbsp; 
 <img src="screenshots/screen_002.jpeg" width="400" /> &nbsp;
