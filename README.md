@@ -24,6 +24,15 @@ var sn = "";
 
 ### Optional/Advanced
 * Get a [map API key from MapQuest](https://developer.mapquest.com/) and add it to your `NiuDataWidget.js` file.
+* If you do not want the map area, config the `NiuDataWidget.js` file as follows
+    * `var show_last_track_map = false`
+    * `var hide_map = true`
+* If you want the map area to display the location, config the `NiuDataWidget.js` file as follows
+    * `var show_last_track_map = false`
+    * `var hide_map = false`
+* If you want the map area to display the last track, config the `NiuDataWidget.js` file as follows
+    * `var show_last_track_map = true`
+    * `var hide_map = true`
 
 ## Features
 
@@ -31,9 +40,11 @@ This widget support:
 * charging overview (current charge and time until charge complete)
 * locked/unlocked
 * acc on/off
+* GPS && GSM signal
 * battery connect indicator, display centre control battery if battery disconnected
 * time since the data was retreived from the car
 * map location of the current position
+* last track information
 
 ## Special Thanks
 

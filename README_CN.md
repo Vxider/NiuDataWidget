@@ -25,6 +25,15 @@ var sn = "";
 
 ### 高级选项
 * 获取[地图API key](https://developer.mapquest.com/)并填写于文件`NiuDataWidget.js`.
+* 无需显示地图信息，在`NiuDataWidget.js`文件中设置
+    * `var show_last_track_map = false`
+    * `var hide_map = true`
+* 地图位置如需显示车辆定位，在`NiuDataWidget.js`文件中设置
+    * `var show_last_track_map = false`
+    * `var hide_map = false`
+* 地图位置如需显示最近旅程，在`NiuDataWidget.js`文件中设置
+    * `var show_last_track_map = true`
+    * `var hide_map = true`
 
 ## 功能
 
@@ -32,9 +41,11 @@ var sn = "";
 * 充电状态显示
 * 设防状态显示
 * 启动状态显示
+* GPS、GSM信号强度显示
 * 电池状态显示，电池连接时显示电池电量，断开时显示中控电量
 * 上次更新时间
 * 车辆位置信息地图显示
+* 最近旅程信息显示
 
 ## 特别感谢
 

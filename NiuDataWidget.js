@@ -10,10 +10,8 @@
 
 {
 	var show_data_age = false; // show how stale the data is
-	var hide_map = false;
-	var username = "";
-	var password = ""; //md5(password)
-	var sn = ""
+	var show_last_track_map = true;
+	var hide_map = true;
 	var car_name = '🛵M+'
 	var distance_label = 'KM'
 	var debug_size = "medium"; // which size should the widget try to run as when run through Scriptable. (small, medium, large)
@@ -83,9 +81,9 @@ if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
 
 //NOTE: these values may not align with the data names from our service. Review the documention for the expected values and their names.
 
-// If you want to do additional post-processing of data from your API, you should create a theme that modifies niu_data.postLoad(json).
+// If you want to do additional post-processing of data from your API, you should create a theme that modifies info_data.postLoad(json).
 
-var niu_data = {
+var info_data = {
 	source: "Unknown",
 	last_contact: "",
 	data_is_stale: false, // if the data is especially old (> 2 hours)
@@ -93,6 +91,7 @@ var niu_data = {
 	centre_battery_level: -1,
 	battery_range: -1,
 	car_state: "Unknown",
+	is_charging: false,
 	fortification_on: true,
 	time_to_charge: 10000,
 	longitude: -1,
@@ -104,6 +103,14 @@ var niu_data = {
 	battery_connected: false
 };
 
+var last_track_data = {
+	trackId: '',
+	ridingTime: 0,
+	distance: 0,
+	avespeed: 0,
+	track_thumb: '',
+	power_consumption: 0
+};
 
 // a little helper to try to estimate the size of the widget in pixels
 var widgetSize = computeWidgetSize();
@@ -114,15 +121,15 @@ var theme = {
 		init: function () {
 
 		},
-		draw: async function (widget, niu_data, colors) {
+		draw: async function (widget, info_data, colors) {
 			widget.setPadding(5, 5, 5, 5)
 			widget.backgroundColor = new Color(colors.background)
-			theme.drawCarStatus(widget, niu_data, colors, widgetSize);
-			theme.drawCarName(widget, niu_data, colors, widgetSize);
-			theme.drawCarInfo(widget, niu_data, colors, widgetSize);
-			theme.drawStatusLights(widget, niu_data, colors, widgetSize);
-			theme.drawRangeInfo(widget, niu_data, colors, widgetSize);
-			theme.drawBatteryBar(widget, niu_data, colors, widgetSize);
+			theme.drawCarStatus(widget, info_data, colors, widgetSize);
+			theme.drawCarName(widget, info_data, colors, widgetSize);
+			theme.drawCarInfo(widget, info_data, colors, widgetSize);
+			theme.drawStatusLights(widget, info_data, colors, widgetSize);
+			theme.drawRangeInfo(widget, info_data, colors, widgetSize);
+			theme.drawBatteryBar(widget, info_data, colors, widgetSize);
 
 		}
 	},
@@ -147,23 +154,23 @@ var theme = {
 
 		}
 	},
-	draw: async function (widget, niu_data, colors) {
+	draw: async function (widget, info_data, colors) {
 		var widgetSizing = debug_size;
 		if (config.widgetFamily != null) {
 			widgetSizing = config.widgetFamily;
 		}
 		switch (widgetSizing) {
 			case "medium":
-				if (this.medium.available) { await this.medium.draw(widget, niu_data, colors); }
+				if (this.medium.available) { await this.medium.draw(widget, info_data, colors); }
 				else { drawErrorWidget(widget, 'Theme not available at this size'); }
 				break;
 			case "large":
-				if (this.large.available) { await this.large.draw(widget, niu_data, colors); }
+				if (this.large.available) { await this.large.draw(widget, info_data, colors); }
 				else { drawErrorWidget(widget, 'Theme not available at this size'); }
 				break;
 			case "small":
 			default:
-				if (this.small.available) { await this.small.draw(widget, niu_data, colors); }
+				if (this.small.available) { await this.small.draw(widget, info_data, colors); }
 				else { drawErrorWidget(widget, 'Theme not available at this size'); }
 				break;
 		}
@@ -173,13 +180,73 @@ theme.medium.available = true;
 theme.medium.init = theme.small.init;
 theme.medium.draw = theme.small.draw;
 
+function addLastTrackMapArea() { // add the last track map area for medium size.
+	if (show_last_track_map && hide_map) {
+		// only if we have everything we need, otherwise leave the medium size as is.
+
+		theme.medium.draw = async function (widget, info_data, colors) {
+			widget.setPadding(5, 5, 5, 5);
+			widget.backgroundColor = new Color(colors.background);
+			let body = widget.addStack();
+
+			body.layoutHorizontally();
+
+			let column_left = body.addStack();
+			column_left.size = new Size(widgetSize.width / 2, widgetSize.height);
+			column_left.layoutVertically();
+
+			theme.drawCarStatus(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawCarName(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawCarInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawStatusLights(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawRangeInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawBatteryBar(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+
+			let center_padding = body.addSpacer(10);
+			let column_right = body.addStack();
+
+			var mapImage;
+
+			configFilePath = "niu_last_track_id.data";
+			imageFilePath = "niu_last_track_thumb.png";
+
+			var last_track_id = '';
+			let imageManager = FileManager.local();
+			let configFile = imageManager.joinPath(imageManager.cacheDirectory(), configFilePath);
+			let imageFile = imageManager.joinPath(imageManager.cacheDirectory(), imageFilePath);
+			if (imageManager.fileExists(configFile))
+				last_track_id = imageManager.readString(configFile);
+			if (last_track_id == last_track_data.trackId && imageManager.fileExists(imageFile))
+				mapImage = await imageManager.readImage(imageFile);
+			else
+			{
+				var req = await new Request(last_track_data.track_thumb);
+				mapImage = await req.loadImage()
+				imageManager.writeImage(imageFile, mapImage);
+				imageManager.writeString(configFile, last_track_data.trackId);
+			}
+
+			column_right.topAlignContent();
+
+			let mapImageContext = new DrawContext()
+			mapImageContext.opaque = true
+			mapImageContext.size = mapImage.size;
+			mapImageContext.drawImageAtPoint(mapImage, new Point(0, 0))
+
+			let mapImageObj = column_right.addImage(mapImageContext.getImage());
+			mapImageObj.cornerRadius = 22;
+			mapImageObj.rightAlignImage();
+		}
+	}
+}
+
 function addMapArea() { // add the map area for medium size.
-	if (!hide_map && niu_data.longitude != -1 && niu_data.latitude != -1) {
+	if (!show_last_track_map && !hide_map && info_data.longitude != -1 && info_data.latitude != -1) {
 		// only if we have everything we need, otherwise leave the medium size as is.
 
 		const mapZoomLevel = 15;
 
-		theme.medium.draw = async function (widget, niu_data, colors) {
+		theme.medium.draw = async function (widget, info_data, colors) {
 			widget.setPadding(5, 5, 5, 5);
 			widget.backgroundColor = new Color(colors.background);
 			let body = widget.addStack();
@@ -191,19 +258,19 @@ function addMapArea() { // add the map area for medium size.
 			column_left.layoutVertically();
 
 
-			theme.drawCarStatus(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawCarName(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawCarInfo(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawStatusLights(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawRangeInfo(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawBatteryBar(column_left, niu_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawCarStatus(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawCarName(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawCarInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawStatusLights(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawRangeInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawBatteryBar(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 
 			let center_padding = body.addSpacer(10);
 			let column_right = body.addStack();
 			var mapImage;
 
-			roundedLat = Math.round(niu_data.latitude * 2000) / 2000;
-			roundedLong = Math.round(niu_data.longitude * 2000) / 2000;
+			roundedLat = Math.round(info_data.latitude * 2000) / 2000;
+			roundedLong = Math.round(info_data.longitude * 2000) / 2000;
 			storedFile = "niu_widget_map" + roundedLat * 2000 + "!" + roundedLong * 2000 + ".image";
 
 			let map_image_manager = FileManager.local();
@@ -223,14 +290,14 @@ function addMapArea() { // add the map area for medium size.
 			column_right.topAlignContent();
 			if (useGoogleMaps) {
 				// use Google Maps
-				column_right.url = `comgooglemaps://maps.google.com/?center=${niu_data.latitude},${niu_data.longitude}&zoom=${mapZoomLevel}&q=${niu_data.latitude},${niu_data.longitude}`;
+				column_right.url = `comgooglemaps://maps.google.com/?center=${info_data.latitude},${info_data.longitude}&zoom=${mapZoomLevel}&q=${info_data.latitude},${info_data.longitude}`;
 			} else {
 				// use Apple Maps
-				column_right.url = `http://maps.apple.com/?ll=${niu_data.latitude},${niu_data.longitude}&q=Niu`;
+				column_right.url = `http://maps.apple.com/?ll=${info_data.latitude},${info_data.longitude}&q=Niu`;
 
 			}
 
-			var location = await getLocation(niu_data.latitude, niu_data.longitude)
+			var location = await getLocation(info_data.latitude, info_data.longitude)
 			if (location.length > 12)
 				location = [location.slice(0, 12), '\n', location.slice(12)].join('');
 
@@ -255,15 +322,15 @@ function addMapArea() { // add the map area for medium size.
 
 var _0xd9c9 = ["\x32\x30\x30\x2C\x32\x30\x30\x40\x32\x78", "", "\x32\x4F\x6F\x59\x6D\x41\x46\x71\x49\x74\x53\x30\x71\x54\x54\x74\x48\x70\x37\x56\x72\x45\x56\x42\x48\x67\x49\x45\x7A\x4E\x58\x41", "\x68\x74\x74\x70\x73\x3A\x2F\x2F\x77\x77\x77\x2E\x6D\x61\x70\x71\x75\x65\x73\x74\x61\x70\x69\x2E\x63\x6F\x6D\x2F\x73\x74\x61\x74\x69\x63\x6D\x61\x70\x2F\x76\x35\x2F\x6D\x61\x70\x3F\x6B\x65\x79\x3D", "\x26\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x73\x3D", "\x2C", "\x26\x7A\x6F\x6F\x6D\x3D", "\x26\x66\x6F\x72\x6D\x61\x74\x3D\x70\x6E\x67\x26\x73\x69\x7A\x65\x3D", "\x26\x74\x79\x70\x65\x3D", "\x74\x79\x70\x65", "\x6D\x61\x70", "\x26\x64\x65\x66\x61\x75\x6C\x74\x4D\x61\x72\x6B\x65\x72\x3D\x6D\x61\x72\x6B\x65\x72\x2D", "\x70\x6F\x73\x69\x74\x69\x6F\x6E", "\x6C\x6F\x61\x64\x49\x6D\x61\x67\x65"]; async function getMapImage(_0x4583x2, _0x4583x3, _0x4583x4, _0x4583x5) { var _0x4583x6 = _0xd9c9[0]; if (mapKey == null || mapKey == _0xd9c9[1]) { mapKey = _0xd9c9[2] }; let _0x4583x7 = `${_0xd9c9[3]}${mapKey}${_0xd9c9[4]}${_0x4583x3}${_0xd9c9[5]}${_0x4583x2}${_0xd9c9[6]}${_0x4583x4}${_0xd9c9[7]}${_0x4583x6}${_0xd9c9[8]}${_0x4583x5[_0xd9c9[10]][_0xd9c9[9]]}${_0xd9c9[11]}${_0x4583x5[_0xd9c9[10]][_0xd9c9[12]]}${_0xd9c9[1]}`; r = new Request(_0x4583x7); i = await r[_0xd9c9[13]](); return i }
 
-theme.drawCarStatus = function (widget, niu_data, colors, widgetSize) {
+theme.drawCarStatus = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
 	stack.topAlignContent();
 	stack.setPadding(0, 6, 0, 6);
 
 	let timeDiff = 0
-	if (niu_data.last_contact.length > 0) {
-		let lastUpdateText = stack.addText(niu_data.last_contact)
+	if (info_data.last_contact.length > 0) {
+		let lastUpdateText = stack.addText(info_data.last_contact)
 		lastUpdateText.textColor = new Color(colors.text.primary);
 		lastUpdateText.textOpacity = 0.4
 		lastUpdateText.font = Font.systemFont(12)
@@ -271,7 +338,16 @@ theme.drawCarStatus = function (widget, niu_data, colors, widgetSize) {
 
 	}
 	let carStateSpacer = stack.addSpacer(null)
-	switch (niu_data.car_state) {
+
+	switch (info_data.car_state) {
+		case "fortification_on": {
+			lockIcon = this.getLockIcon();
+			var carState = stack.addImage(lockIcon);
+			carState.tintColor = new Color(colors.icons.locked);
+			carState.imageSize = scaleImage(lockIcon.size, 18);
+			carState.rightAlignImage();
+			break;
+		}
 		case "acc_off": {
 			idlingIcon = this.getPowerIcon(colors);
 			var carState = stack.addImage(idlingIcon);
@@ -345,7 +421,7 @@ theme.drawCarStatus = function (widget, niu_data, colors, widgetSize) {
 	}
 }
 
-theme.drawCarName = function (widget, niu_data, colors, widgetSize) {
+theme.drawCarName = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
 	stack.centerAlignContent();
@@ -358,93 +434,120 @@ theme.drawCarName = function (widget, niu_data, colors, widgetSize) {
 	carName.minimumScaleFactor = 0.5
 }
 
-theme.drawCarInfo = function (widget, niu_data, colors, widgetSize) {
+theme.drawCarInfo = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.13);
-	stack.centerAlignContent();
 	stack.setPadding(3, 0, 3, 0);
+	stack.centerAlignContent();
 
-	var carInfoText = "GPS ";
-	for (i = 0; i < niu_data.gps; i++)
-		carInfoText = carInfoText + "•";
-	for (i = niu_data.gps; i < 5; i++)
-		carInfoText = carInfoText + "◦";
-	carInfoText = carInfoText + "  GSM ";
-	for (i = 0; i < niu_data.gsm ; i++)
-		carInfoText = carInfoText + "•";
-	for (i = niu_data.gsm; i < 5; i++)
-		carInfoText = carInfoText + "◦";
+	var GPStext1 = "GPS ";
+	for (i = 0; i < info_data.gps && i < 5; i++)
+		GPStext1 = GPStext1 + "•";
+	var GPStext2 = '';
+	for (i = info_data.gps; i < 5; i++)
+		GPStext2 = GPStext2 + "◦";
 
-	let carInfo = stack.addText(carInfoText);
-	carInfo.centerAlignText()
-	carInfo.font = Font.semiboldSystemFont(12)
-	carInfo.textColor = new Color(colors.icons.default);
-	carInfo.minimumScaleFactor = 0.5
+	let gpsLabel1 = stack.addText(GPStext1)
+	gpsLabel1.font = Font.semiboldSystemFont(10)
+	gpsLabel1.textColor = new Color(colors.icons.default);
+	let gpsLabel2 = stack.addText(GPStext2)
+	gpsLabel2.font = Font.semiboldSystemFont(10)
+	gpsLabel2.textColor = new Color("#CCCCCC");
+
+	var GSMtext1 = "   GSM ";
+	for (i = 0; i < info_data.gsm && i < 5; i++)
+		GSMtext1 = GSMtext1 + "•";
+	var GSMtext2 = "";
+	for (i = info_data.gsm; i < 5; i++)
+		GSMtext2 = GSMtext2 + "◦";
+
+	let gsmLabel1 = stack.addText(GSMtext1);
+	gsmLabel1.font = Font.semiboldSystemFont(10)
+	gsmLabel1.textColor = new Color(colors.icons.default);
+	let gsmLabel2 = stack.addText(GSMtext2);
+	gsmLabel2.font = Font.semiboldSystemFont(10)
+	gsmLabel2.textColor = new Color("#CCCCCC");
 }
 
-theme.drawStatusLights = function (widget, niu_data, colors, widgetSize) {
+theme.drawStatusLights = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.15);
-	stack.setPadding(3, 10, 3, 10);
+	stack.setPadding(3, 3, 3, 3);
 	stack.backgroundColor = new Color(colors.background_status);;
 	stack.cornerRadius = 3;
 	stack.centerAlignContent();
 
-	var carControlLockIconImage = this.getShieldIcon();
-	let carControlLockIcon = stack.addImage(carControlLockIconImage);
-	carControlLockIcon.imageSize = scaleImage(carControlLockIcon.image.size, 12)
-	carControlLockIcon.containerRelativeShape = true
-	if (niu_data.fortification_on)
-		carControlLockIcon.tintColor = new Color(colors.icons.locked);
-	else
-		carControlLockIcon.tintColor = new Color(colors.icons.default);
-	let carControlSpacer = stack.addSpacer(null)
+	let mapIcon = stack.addImage(this.getMapIcon());
+	mapIcon.imageSize = scaleImage(mapIcon.image.size, 10)
+	mapIcon.containerRelativeShape = true
+	mapIcon.tintColor = new Color(colors.icons.default);
 
-	lastTrackIconImage = this.getlastTrackIcon();
-	let lastTrackIcon = stack.addImage(lastTrackIconImage);
-	lastTrackIcon.imageSize = scaleImage(lastTrackIcon.image.size, 12)
-	lastTrackIcon.containerRelativeShape = true
-	lastTrackIcon.tintColor = new Color(colors.icons.default);
+	let distance = stack.addText(" " + (last_track_data.distance / 1000).toFixed(1) + 'KM')
+	distance.textColor = new Color(colors.icons.default);
+	distance.font = Font.systemFont(10)
+	distance.textOpacity = 1.0
 
-	var lastTrackText = " " + (niu_data.lastTrack_distance / 1000).toFixed(1) + 'KM/' + Math.round(niu_data.lastTrack_ridingTime / 60) + "min";
+	stack.addSpacer(null);
+	let clockIcon = stack.addImage(this.getClockIcon());
+	clockIcon.imageSize = scaleImage(mapIcon.image.size, 10)
+	clockIcon.containerRelativeShape = true
+	clockIcon.tintColor = new Color(colors.icons.default);
 
-	let lastTrack = stack.addText(lastTrackText)
-	lastTrack.textColor = new Color(colors.icons.default);
-	lastTrack.font = Font.systemFont(12)
-	lastTrack.textOpacity = 1.0
+	let clock = stack.addText(" " + Math.round(last_track_data.ridingTime / 60) + "min")
+	clock.textColor = new Color(colors.icons.default);
+	clock.font = Font.systemFont(10)
+	clock.textOpacity = 1.0
+
+	stack.addSpacer(null);
+	let batteryIcon = stack.addImage(this.getFlashIcon());
+	batteryIcon.imageSize = scaleImage(mapIcon.image.size, 10)
+	batteryIcon.containerRelativeShape = true
+	batteryIcon.tintColor = new Color(colors.icons.default);
+
+	let battery = stack.addText(" " + last_track_data.power_consumption + "%")
+	battery.textColor = new Color(colors.icons.default);
+	battery.font = Font.systemFont(10)
+	battery.textOpacity = 1.0
 }
 
 { // helper functions to draw things for status lights
-	theme.getShieldIcon = function () {
-		return SFSymbol.named("lock.shield.fill").image;
+	theme.getLockIcon = function () {
+		return SFSymbol.named("lock.circle.fill").image;
 	}
 
-	theme.getlastTrackIcon = function () {
-		unlockSymbol = SFSymbol.named("map");
-		return unlockSymbol.image;
+	theme.getMapIcon = function () {
+		return SFSymbol.named("mappin.circle.fill").image;
+	}
+
+	theme.getClockIcon = function () {
+		return SFSymbol.named("clock.fill").image;
+	}
+
+	theme.getFlashIcon = function () {
+		return SFSymbol.named("bolt.circle.fill").image;
 	}
 }
 
-theme.drawRangeInfo = function (widget, niu_data, colors, widgetSize) {
+theme.drawRangeInfo = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.13);
 	stack.centerAlignContent();
 	stack.setPadding(3, 10, 0, 10);
 
-	if (niu_data.usable_battery_level > -1) {
+	if (info_data.usable_battery_level > -1) {
 		let batteryCurrentChargePercentTxt = "";
-		if (niu_data.battery_connected)
-			batteryCurrentChargePercentTxt = stack.addText(niu_data.usable_battery_level + "%")
+		if (info_data.battery_connected)
+			batteryCurrentChargePercentTxt = stack.addText(info_data.usable_battery_level + "%")
 		else
-			batteryCurrentChargePercentTxt = stack.addText(niu_data.centre_battery_level + "%")
+			batteryCurrentChargePercentTxt = stack.addText(info_data.centre_battery_level + "%")
 		batteryCurrentChargePercentTxt.textColor = new Color(colors.text.primary);
 		batteryCurrentChargePercentTxt.textOpacity = 0.6
 		batteryCurrentChargePercentTxt.font = Font.systemFont(12)
 		batteryCurrentChargePercentTxt.centerAlignText()
 	}
-	if (niu_data.battery_range > -1) {
+	if (info_data.battery_range > -1) {
 		let carChargingSpacer1 = stack.addSpacer(null)
-		batteryCurrentCharge = "" + Math.floor(niu_data.battery_range) + distance_label;
+		batteryCurrentCharge = "" + Math.floor(info_data.battery_range) + distance_label;
 		if (batteryCurrentCharge.length > 0) {
 			let batteryCurrentRangeTxt = stack.addText(batteryCurrentCharge)
 			batteryCurrentRangeTxt.textColor = new Color(colors.text.primary);
@@ -454,11 +557,11 @@ theme.drawRangeInfo = function (widget, niu_data, colors, widgetSize) {
 		}
 	}
 
-	if (niu_data.car_state == "charging") {
+	if (info_data.car_state == "charging") {
 		let carChargingSpacer2 = stack.addSpacer(null);
 
 		// currently charging
-		minutes = Math.round((niu_data.time_to_charge - Math.floor(niu_data.time_to_charge)) * 12) * 5;
+		minutes = Math.round((info_data.time_to_charge - Math.floor(info_data.time_to_charge)) * 12) * 5;
 		if (minutes < 10) { minutes = "0" + minutes }
 
 		chargingSymbol = this.getChargerConnectedIcon();
@@ -467,7 +570,7 @@ theme.drawRangeInfo = function (widget, niu_data, colors, widgetSize) {
 		carControlIconBolt.tintColor = new Color(colors.text.primary);
 		carControlIconBolt.imageOpacity = 0.8;
 
-		let carChargeCompleteTime = stack.addText(" " + Math.floor(niu_data.time_to_charge) + ":" + minutes);
+		let carChargeCompleteTime = stack.addText(" " + Math.floor(info_data.time_to_charge) + ":" + minutes);
 		carChargeCompleteTime.textColor = new Color(colors.text.primary);
 		carChargeCompleteTime.font = Font.systemFont(12);
 		carChargeCompleteTime.textOpacity = 0.6;
@@ -484,13 +587,13 @@ theme.drawRangeInfo = function (widget, niu_data, colors, widgetSize) {
 	}
 }
 
-theme.drawBatteryBar = function (widget, niu_data, colors, widgetSize) {
+theme.drawBatteryBar = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.15);
 	stack.topAlignContent();
 	stack.setPadding(3, 0, 0, 0);
 
-	let batteryBarImg = stack.addImage(battery_bar.draw(niu_data, colors, widgetSize));
+	let batteryBarImg = stack.addImage(battery_bar.draw(info_data, colors, widgetSize));
 	batteryBarImg.centerAlignImage()
 }
 
@@ -502,7 +605,7 @@ var battery_bar = { // battery bar draw functions
 	height: 15,
 	init: function () {
 	},
-	draw: function (niu_data, colors, widgetSize) {
+	draw: function (info_data, colors, widgetSize) {
 		this.width = widgetSize.width - 6;
 		this.batteryPath.addRoundedRect(new Rect(1, 1, this.width, this.height), 7, 7);
 		this.batteryPathInset.addRoundedRect(new Rect(2, 2, this.width - 2, this.height - 2), 7, 7);
@@ -520,7 +623,7 @@ var battery_bar = { // battery bar draw functions
 		let batteryMaxCharge = new DrawContext();
 		batteryMaxCharge.opaque = false;
 		batteryMaxCharge.size = new Size(this.width, this.height)
-		if (niu_data.car_state == "charging") {
+		if (info_data.car_state == "charging") {
 			batteryMaxCharge.setFillColor(new Color(colors.battery.charging));
 		} else {
 			batteryMaxCharge.setFillColor(new Color(colors.battery.max_charge));
@@ -533,13 +636,13 @@ var battery_bar = { // battery bar draw functions
 		// draw the available charge
 		let availableCharge = new DrawContext();
 		availableCharge.opaque = false;
-		if (niu_data.battery_connected) {
-			let usable_battery_level = Number(niu_data.usable_battery_level);
+		if (info_data.battery_connected) {
+			let usable_battery_level = Number(info_data.usable_battery_level);
 			availableCharge.size = new Size(this.width * usable_battery_level / 100, this.height);
 			availableCharge.setFillColor(new Color(colors.battery.usable_charge));
 		}
 		else {
-			let centre_battery_level = Number(niu_data.centre_battery_level);
+			let centre_battery_level = Number(info_data.centre_battery_level);
 			availableCharge.size = new Size(this.width * centre_battery_level / 100, this.height);
 			availableCharge.setFillColor(new Color(colors.battery.centreCtrl));
 		}
@@ -565,9 +668,10 @@ battery_bar.init();
 let response = await loadNiuData()
 
 addMapArea(); // after loading car data we can decide if we can display the map
+addLastTrackMapArea();
 
 if (response == "ok") {
-	let widget = await createWidget(niu_data, colors);
+	let widget = await createWidget(info_data, colors);
 	Script.setWidget(widget);
 	presentWidget(widget);
 	Script.complete();
@@ -593,7 +697,7 @@ function presentWidget(widget) {
 	}
 }
 
-async function createWidget(niu_data, colors) {
+async function createWidget(info_data, colors) {
 	themeDebugArea();
 
 	let td_theme = FileManager.iCloud()
@@ -607,7 +711,7 @@ async function createWidget(niu_data, colors) {
 
 	let w = new ListWidget()
 	theme.init();
-	await theme.draw(w, niu_data, colors);
+	await theme.draw(w, info_data, colors);
 
 	return w
 }
@@ -638,7 +742,7 @@ function drawErrorWidget(w, reason) {
 
 }
 
-async function fetchNiuData(token) {
+async function fetchInfoData(token) {
 	var req = await new Request('https://app-api.niu.com/v3/motor_data/index_info?&sn=' + sn);
 	req.method = 'GET';
 	req.headers = {
@@ -647,6 +751,21 @@ async function fetchNiuData(token) {
 		'token': token
 	};
 	var json = await req.loadJSON();
+	console.log("FetchInfoData:" + JSON.stringify(json));
+	return json;
+}
+
+async function fetchLastTrackData(token) {
+	var req = await new Request('https://app-api.niu.com/v5/track/list/v2');
+	req.method = 'POST';
+	req.headers = {
+		'Content-Type': 'application/json',
+		'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+		'token': token
+	};
+	req.body = '{"sn":"' + sn + '","index":"0","token":"' + token + '","pagesize":1}';
+	var json = await req.loadJSON();
+	console.log("FetchLastTrackData:" + JSON.stringify(json));
 	return json;
 }
 
@@ -692,42 +811,52 @@ async function loadToken(force = false) {
 	}
 }
 
-function parseCarData(json) {
-	niu_data.usable_battery_level = json.data.batteries.compartmentA.batteryCharging;
-	niu_data.battery_connected = json.data.batteries.compartmentA.isConnected;
-	niu_data.centre_battery_level = json.data.centreCtrlBattery;
-	niu_data.battery_range = json.data.estimatedMileage;
-	if (json.data.isCharging == 1)
-		niu_data.car_state = "charging";
+function parseInfoData(json) {
+	info_data.usable_battery_level = json.data.batteries.compartmentA.batteryCharging;
+	info_data.battery_connected = json.data.batteries.compartmentA.isConnected;
+	info_data.centre_battery_level = json.data.centreCtrlBattery;
+	info_data.battery_range = json.data.estimatedMileage;
+	info_data.is_charging = json.data.isCharging == 1;
+	if (!info_data.battery_connected)
+		info_data.car_state = "disconnected";
+	else if (json.data.isFortificationOn == 1)
+		info_data.car_state = "fortification_on";
 	else if (json.data.isAccOn == 1)
-		niu_data.car_state = "acc_on";
-	else if (!niu_data.battery_connected)
-		niu_data.car_state = "disconnected";
+		info_data.car_state = "acc_on";
 	else
-		niu_data.car_state = "acc_off"
-	niu_data.gps = json.data.gps;
-	niu_data.gsm = Math.ceil(json.data.gsm / 6);
-	niu_data.fortification_on = (json.data.isFortificationOn == 1);
-	niu_data.time_to_charge = json.data.leftTime;
-	niu_data.longitude = json.data.postion.lng;
-	niu_data.latitude = json.data.postion.lat;
-	niu_data.lastTrack_ridingTime = json.data.lastTrack.ridingTime;
-	niu_data.lastTrack_distance = json.data.lastTrack.distance;
+		info_data.car_state = "acc_off"
+	info_data.gps = json.data.gps;
+	info_data.gsm = Math.ceil(json.data.gsm / 6);
+	info_data.fortification_on = (json.data.isFortificationOn == 1);
+	info_data.time_to_charge = json.data.leftTime;
+	info_data.longitude = json.data.postion.lng;
+	info_data.latitude = json.data.postion.lat;
+	info_data.lastTrack_ridingTime = json.data.lastTrack.ridingTime;
+	info_data.lastTrack_distance = json.data.lastTrack.distance;
 
 	let lastUpdate = new Date(json.data.time)
 	let now = new Date()
 	timeDiff = Math.round((Math.abs(now - lastUpdate)) / (1000 * 60))
 	if (timeDiff < 60) {
 		// been less than an hour since last update
-		niu_data.last_contact = timeDiff + "m ago"
+		info_data.last_contact = timeDiff + "m ago"
 	} else if (timeDiff < 1440) {
-		niu_data.last_contact = Math.floor(timeDiff / 60) + "h ago"
+		info_data.last_contact = Math.floor(timeDiff / 60) + "h ago"
 	} else {
-		niu_data.last_contact = Math.floor(timeDiff / 1440) + "d ago"
+		info_data.last_contact = Math.floor(timeDiff / 1440) + "d ago"
 	}
 	if (timeDiff / 60 > 2) {
-		niu_data.data_is_stale = true; // data is more than 2 hours old.
+		info_data.data_is_stale = true; // data is more than 2 hours old.
 	}
+}
+
+function parseLastTrackData(json) {
+	last_track_data.ridingTime = json.data.items[0].ridingtime;
+	last_track_data.trackId= json.data.items[0].trackId;
+	last_track_data.distance = json.data.items[0].distance;
+	last_track_data.avespeed = json.data.items[0].avespeed;
+	last_track_data.track_thumb = json.data.items[0].track_thumb;
+	last_track_data.power_consumption = json.data.items[0].power_consumption;
 }
 
 async function loadNiuData() {
@@ -739,20 +868,21 @@ async function loadNiuData() {
 
 		try {
 			var token = await loadToken();
-			var json = await fetchNiuData(token);
-			if (json.status == 1131) {
-				var token = await loadToken(true);
-				var json = await fetchNiuData(token);
+			var infoJson = await fetchInfoData(token);
+			if (infoJson.status == 1131) {
+				token = await loadToken(true);
+				infoJson = await fetchInfoData(token);
 			}
-			var jsonExport = JSON.stringify(json);
-			backupManager.writeString(backupLocation, jsonExport);
-			parseCarData(json);
+			var lastTrackJSON = await fetchLastTrackData(token);
+			backupManager.writeString(backupLocation, JSON.stringify(infoJson));
+			parseInfoData(infoJson);
+			parseLastTrackData(lastTrackJSON);
 		} catch (e) {
 			// offline, grab the backup copy
 			if (backupManager.fileExists(backupLocation)) {
 				var jsonImport = backupManager.readString(backupLocation);
-				var json = JSON.parse(jsonImport);
-				parseCarData(json);
+				var infoJson = JSON.parse(jsonImport);
+				parseInfoData(infoJson);
 			}
 			return e;
 		}
@@ -812,6 +942,7 @@ function getSampleData() {
 		"battery_range": 104,
 		"car_state": "Unknown",
 		"fortification_on": true,
+		"is_charging": false,
 		"time_to_charge": 10000,
 		"longitude": -1,
 		"latitude": -1,
