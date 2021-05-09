@@ -476,7 +476,7 @@ theme.drawStatusLights = function (widget, info_data, colors, widgetSize) {
 	stack.centerAlignContent();
 
 	let mapIcon = stack.addImage(this.getMapIcon());
-	mapIcon.imageSize = scaleImage(mapIcon.image.size, 10)
+	mapIcon.imageSize = scaleImage(mapIcon.image.size, 8)
 	mapIcon.containerRelativeShape = true
 	mapIcon.tintColor = new Color(colors.icons.default);
 
@@ -487,18 +487,18 @@ theme.drawStatusLights = function (widget, info_data, colors, widgetSize) {
 
 	stack.addSpacer(null);
 	let clockIcon = stack.addImage(this.getClockIcon());
-	clockIcon.imageSize = scaleImage(mapIcon.image.size, 10)
+	clockIcon.imageSize = scaleImage(clockIcon.image.size, 8)
 	clockIcon.containerRelativeShape = true
 	clockIcon.tintColor = new Color(colors.icons.default);
 
-	let clock = stack.addText(" " + Math.round(last_track_data.ridingTime / 60) + "min")
+	let clock = stack.addText(" " + Math.round(last_track_data.ridingTime / 60) + "m")
 	clock.textColor = new Color(colors.icons.default);
 	clock.font = Font.systemFont(10)
 	clock.textOpacity = 1.0
 
 	stack.addSpacer(null);
 	let batteryIcon = stack.addImage(this.getFlashIcon());
-	batteryIcon.imageSize = scaleImage(mapIcon.image.size, 10)
+	batteryIcon.imageSize = scaleImage(batteryIcon.image.size, 8)
 	batteryIcon.containerRelativeShape = true
 	batteryIcon.tintColor = new Color(colors.icons.default);
 
