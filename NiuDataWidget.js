@@ -9,10 +9,8 @@
 //
 
 {
-	var show_data_age = false; // show how stale the data is
 	var show_last_track_map = true;
 	var hide_map = true;
-	var distance_label = 'KM'
 	var debug_size = "medium"; // which size should the widget try to run as when run through Scriptable. (small, medium, large)
 	var is_dark_mode_working = false; // Scriptable widgets don't currently support dark mode.
 }
