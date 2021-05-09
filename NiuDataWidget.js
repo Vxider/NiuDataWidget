@@ -12,7 +12,6 @@
 	var show_data_age = false; // show how stale the data is
 	var show_last_track_map = true;
 	var hide_map = true;
-	var car_name = '🛵M+'
 	var distance_label = 'KM'
 	var debug_size = "medium"; // which size should the widget try to run as when run through Scriptable. (small, medium, large)
 	var is_dark_mode_working = false; // Scriptable widgets don't currently support dark mode.
@@ -84,6 +83,7 @@ if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
 // If you want to do additional post-processing of data from your API, you should create a theme that modifies info_data.postLoad(json).
 
 var info_data = {
+	scooter_name: '',
 	source: "Unknown",
 	last_contact: "",
 	data_is_stale: false, // if the data is especially old (> 2 hours)
@@ -742,6 +742,18 @@ function drawErrorWidget(w, reason) {
 
 }
 
+async function fetchScooterDetail(token, sn) {
+	var req = await new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
+	req.method = 'GET';
+	req.headers = {
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+		'token': token
+	};
+	var json = await req.loadJSON();
+	return json;
+}
+
 async function fetchInfoData(token) {
 	var req = await new Request('https://app-api.niu.com/v3/motor_data/index_info?&sn=' + sn);
 	req.method = 'GET';
@@ -850,6 +862,10 @@ function parseInfoData(json) {
 	}
 }
 
+function parseScooterDetail(json) {
+	info_data.scooter_name = json.data.scooter_name;
+}
+
 function parseLastTrackData(json) {
 	last_track_data.ridingTime = json.data.items[0].ridingtime;
 	last_track_data.trackId= json.data.items[0].trackId;
@@ -874,9 +890,12 @@ async function loadNiuData() {
 				infoJson = await fetchInfoData(token);
 			}
 			var lastTrackJSON = await fetchLastTrackData(token);
+			var scooterDetailJSON = await fetchScooterDetail(token, sn);
+
 			backupManager.writeString(backupLocation, JSON.stringify(infoJson));
 			parseInfoData(infoJson);
 			parseLastTrackData(lastTrackJSON);
+			parseScooterDetail(scooterDetailJSON);
 		} catch (e) {
 			// offline, grab the backup copy
 			if (backupManager.fileExists(backupLocation)) {
@@ -936,6 +955,7 @@ function computeWidgetSize() {
 
 function getSampleData() {
 	return {
+		"scooter_name": 'Test',
 		"data_is_stale": false, // if the data is especially old (> 2 hours)
 		"usable_battery_level": 88,
 		"centre_battery_level": 100,
