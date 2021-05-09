@@ -88,7 +88,7 @@ var info_data = {
 	usable_battery_level: -1,
 	centre_battery_level: -1,
 	battery_range: -1,
-	car_state: "Unknown",
+	scooter_state: "Unknown",
 	is_charging: false,
 	fortification_on: true,
 	time_to_charge: 10000,
@@ -122,9 +122,9 @@ var theme = {
 		draw: async function (widget, info_data, colors) {
 			widget.setPadding(5, 5, 5, 5)
 			widget.backgroundColor = new Color(colors.background)
-			theme.drawCarStatus(widget, info_data, colors, widgetSize);
-			theme.drawCarName(widget, info_data, colors, widgetSize);
-			theme.drawCarInfo(widget, info_data, colors, widgetSize);
+			theme.drawScooterStatus(widget, info_data, colors, widgetSize);
+			theme.drawScooterName(widget, info_data, colors, widgetSize);
+			theme.drawScooterInfo(widget, info_data, colors, widgetSize);
 			theme.drawStatusLights(widget, info_data, colors, widgetSize);
 			theme.drawRangeInfo(widget, info_data, colors, widgetSize);
 			theme.drawBatteryBar(widget, info_data, colors, widgetSize);
@@ -193,9 +193,9 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 			column_left.size = new Size(widgetSize.width / 2, widgetSize.height);
 			column_left.layoutVertically();
 
-			theme.drawCarStatus(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawCarName(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawCarInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawScooterStatus(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawScooterName(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawScooterInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawStatusLights(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawRangeInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawBatteryBar(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
@@ -256,9 +256,9 @@ function addMapArea() { // add the map area for medium size.
 			column_left.layoutVertically();
 
 
-			theme.drawCarStatus(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawCarName(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
-			theme.drawCarInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawScooterStatus(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawScooterName(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
+			theme.drawScooterInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawStatusLights(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawRangeInfo(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
 			theme.drawBatteryBar(column_left, info_data, colors, new Size(widgetSize.width / 2, widgetSize.height));
@@ -320,7 +320,7 @@ function addMapArea() { // add the map area for medium size.
 
 var _0xd9c9 = ["\x32\x30\x30\x2C\x32\x30\x30\x40\x32\x78", "", "\x32\x4F\x6F\x59\x6D\x41\x46\x71\x49\x74\x53\x30\x71\x54\x54\x74\x48\x70\x37\x56\x72\x45\x56\x42\x48\x67\x49\x45\x7A\x4E\x58\x41", "\x68\x74\x74\x70\x73\x3A\x2F\x2F\x77\x77\x77\x2E\x6D\x61\x70\x71\x75\x65\x73\x74\x61\x70\x69\x2E\x63\x6F\x6D\x2F\x73\x74\x61\x74\x69\x63\x6D\x61\x70\x2F\x76\x35\x2F\x6D\x61\x70\x3F\x6B\x65\x79\x3D", "\x26\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x73\x3D", "\x2C", "\x26\x7A\x6F\x6F\x6D\x3D", "\x26\x66\x6F\x72\x6D\x61\x74\x3D\x70\x6E\x67\x26\x73\x69\x7A\x65\x3D", "\x26\x74\x79\x70\x65\x3D", "\x74\x79\x70\x65", "\x6D\x61\x70", "\x26\x64\x65\x66\x61\x75\x6C\x74\x4D\x61\x72\x6B\x65\x72\x3D\x6D\x61\x72\x6B\x65\x72\x2D", "\x70\x6F\x73\x69\x74\x69\x6F\x6E", "\x6C\x6F\x61\x64\x49\x6D\x61\x67\x65"]; async function getMapImage(_0x4583x2, _0x4583x3, _0x4583x4, _0x4583x5) { var _0x4583x6 = _0xd9c9[0]; if (mapKey == null || mapKey == _0xd9c9[1]) { mapKey = _0xd9c9[2] }; let _0x4583x7 = `${_0xd9c9[3]}${mapKey}${_0xd9c9[4]}${_0x4583x3}${_0xd9c9[5]}${_0x4583x2}${_0xd9c9[6]}${_0x4583x4}${_0xd9c9[7]}${_0x4583x6}${_0xd9c9[8]}${_0x4583x5[_0xd9c9[10]][_0xd9c9[9]]}${_0xd9c9[11]}${_0x4583x5[_0xd9c9[10]][_0xd9c9[12]]}${_0xd9c9[1]}`; r = new Request(_0x4583x7); i = await r[_0xd9c9[13]](); return i }
 
-theme.drawCarStatus = function (widget, info_data, colors, widgetSize) {
+theme.drawScooterStatus = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
 	stack.topAlignContent();
@@ -335,46 +335,46 @@ theme.drawCarStatus = function (widget, info_data, colors, widgetSize) {
 		lastUpdateText.leftAlignText()
 
 	}
-	let carStateSpacer = stack.addSpacer(null)
+	stack.addSpacer(null)
 
-	switch (info_data.car_state) {
+	switch (info_data.scooter_state) {
 		case "fortification_on": {
 			lockIcon = this.getLockIcon();
-			var carState = stack.addImage(lockIcon);
-			carState.tintColor = new Color(colors.icons.locked);
-			carState.imageSize = scaleImage(lockIcon.size, 18);
-			carState.rightAlignImage();
+			var scooterState = stack.addImage(lockIcon);
+			scooterState.tintColor = new Color(colors.icons.locked);
+			scooterState.imageSize = scaleImage(lockIcon.size, 18);
+			scooterState.rightAlignImage();
 			break;
 		}
 		case "acc_off": {
 			idlingIcon = this.getPowerIcon(colors);
-			var carState = stack.addImage(idlingIcon);
-			carState.tintColor = new Color(colors.icons.default);
-			carState.imageSize = scaleImage(idlingIcon.size, 18);
-			carState.rightAlignImage();
+			var scooterState = stack.addImage(idlingIcon);
+			scooterState.tintColor = new Color(colors.icons.default);
+			scooterState.imageSize = scaleImage(idlingIcon.size, 18);
+			scooterState.rightAlignImage();
 			break;
 		}
 		case "acc_on": {
 			drivingIcon = this.getPowerIcon(colors);
-			var carState = stack.addImage(drivingIcon);
-			carState.tintColor = new Color(colors.icons.acc_on);
-			carState.imageSize = scaleImage(drivingIcon.size, 18);
-			carState.rightAlignImage();
+			var scooterState = stack.addImage(drivingIcon);
+			scooterState.tintColor = new Color(colors.icons.acc_on);
+			scooterState.imageSize = scaleImage(drivingIcon.size, 18);
+			scooterState.rightAlignImage();
 			break;
 		}
 		case "charging": {
 			chargingIcon = this.getChargingIcon(colors);
-			var carState = stack.addImage(chargingIcon);
-			carState.imageSize = scaleImage(chargingIcon.size, 18);
-			carState.rightAlignImage();
+			var scooterState = stack.addImage(chargingIcon);
+			scooterState.imageSize = scaleImage(chargingIcon.size, 18);
+			scooterState.rightAlignImage();
 			break;
 		}
 		case "disconnected": {
 			disconnectIcon = this.getDisconnectIcon(colors);
-			var carState = stack.addImage(disconnectIcon);
-			carState.tintColor = new Color(colors.icons.default);
-			carState.imageSize = scaleImage(disconnectIcon.size, 18);
-			carState.rightAlignImage();
+			var scooterState = stack.addImage(disconnectIcon);
+			scooterState.tintColor = new Color(colors.icons.default);
+			scooterState.imageSize = scaleImage(disconnectIcon.size, 18);
+			scooterState.rightAlignImage();
 			break;
 		}
 		default: {
@@ -382,7 +382,7 @@ theme.drawCarStatus = function (widget, info_data, colors, widgetSize) {
 	}
 }
 
-{ // helper functions to draw things for car status
+{ // helper functions to draw things for scooter status
 	theme.getPowerIcon = function (colors) {
 		symbolToUse = "power";
 		let statusSymbol = SFSymbol.named(symbolToUse);
@@ -398,41 +398,41 @@ theme.drawCarStatus = function (widget, info_data, colors, widgetSize) {
 	theme.getChargingIcon = function (colors) {
 		let iconHeight = 17;
 
-		let carChargingImageContext = new DrawContext()
-		carChargingImageContext.opaque = false
-		carChargingImageContext.size = new Size(12, iconHeight)
+		let scooterChargingImageContext = new DrawContext()
+		scooterChargingImageContext.opaque = false
+		scooterChargingImageContext.size = new Size(12, iconHeight)
 
 		let boltLines = [[5, 0], [0, 7], [3, 7], [2, 12], [7, 5], [4, 5]];
 		const boltIcon = new Path()
 		boltIcon.addLines(scaleLines(boltLines, iconHeight - 2, 1, 1));
 		boltIcon.closeSubpath()
 
-		carChargingImageContext.addPath(boltIcon)
-		carChargingImageContext.setLineWidth(2)
-		carChargingImageContext.setStrokeColor(new Color(colors.icons.charging_bolt_outline))
-		carChargingImageContext.strokePath()
-		carChargingImageContext.addPath(boltIcon)
-		carChargingImageContext.setFillColor(new Color(colors.icons.charging_bolt))
-		carChargingImageContext.fillPath()
+		scooterChargingImageContext.addPath(boltIcon)
+		scooterChargingImageContext.setLineWidth(2)
+		scooterChargingImageContext.setStrokeColor(new Color(colors.icons.charging_bolt_outline))
+		scooterChargingImageContext.strokePath()
+		scooterChargingImageContext.addPath(boltIcon)
+		scooterChargingImageContext.setFillColor(new Color(colors.icons.charging_bolt))
+		scooterChargingImageContext.fillPath()
 
-		return carChargingImageContext.getImage();
+		return scooterChargingImageContext.getImage();
 	}
 }
 
-theme.drawCarName = function (widget, info_data, colors, widgetSize) {
+theme.drawScooterName = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.20);
 	stack.centerAlignContent();
 	stack.setPadding(0, 3, 5, 3);
 
-	let carName = stack.addText(car_name);
-	carName.textColor = new Color(colors.text.primary);
-	carName.centerAlignText()
-	carName.font = Font.semiboldSystemFont(24)
-	carName.minimumScaleFactor = 0.5
+	let scooterName = stack.addText(info_data.scooter_name);
+	scooterName.textColor = new Color(colors.text.primary);
+	scooterName.centerAlignText()
+	scooterName.font = Font.semiboldSystemFont(24)
+	scooterName.minimumScaleFactor = 0.5
 }
 
-theme.drawCarInfo = function (widget, info_data, colors, widgetSize) {
+theme.drawScooterInfo = function (widget, info_data, colors, widgetSize) {
 	let stack = widget.addStack();
 	stack.size = new Size(widgetSize.width, widgetSize.height * 0.13);
 	stack.setPadding(3, 0, 3, 0);
@@ -544,8 +544,8 @@ theme.drawRangeInfo = function (widget, info_data, colors, widgetSize) {
 		batteryCurrentChargePercentTxt.centerAlignText()
 	}
 	if (info_data.battery_range > -1) {
-		let carChargingSpacer1 = stack.addSpacer(null)
-		batteryCurrentCharge = "" + Math.floor(info_data.battery_range) + distance_label;
+		stack.addSpacer(null)
+		batteryCurrentCharge = "" + Math.floor(info_data.battery_range) + 'KM';
 		if (batteryCurrentCharge.length > 0) {
 			let batteryCurrentRangeTxt = stack.addText(batteryCurrentCharge)
 			batteryCurrentRangeTxt.textColor = new Color(colors.text.primary);
@@ -555,23 +555,23 @@ theme.drawRangeInfo = function (widget, info_data, colors, widgetSize) {
 		}
 	}
 
-	if (info_data.car_state == "charging") {
-		let carChargingSpacer2 = stack.addSpacer(null);
+	if (info_data.scooter_state == "charging") {
+		stack.addSpacer(null);
 
 		// currently charging
 		minutes = Math.round((info_data.time_to_charge - Math.floor(info_data.time_to_charge)) * 12) * 5;
 		if (minutes < 10) { minutes = "0" + minutes }
 
 		chargingSymbol = this.getChargerConnectedIcon();
-		let carControlIconBolt = stack.addImage(chargingSymbol);
-		carControlIconBolt.imageSize = scaleImage(chargingSymbol.size, 12);
-		carControlIconBolt.tintColor = new Color(colors.text.primary);
-		carControlIconBolt.imageOpacity = 0.8;
+		let scooterControlIconBolt = stack.addImage(chargingSymbol);
+		scooterControlIconBolt.imageSize = scaleImage(chargingSymbol.size, 12);
+		scooterControlIconBolt.tintColor = new Color(colors.text.primary);
+		scooterControlIconBolt.imageOpacity = 0.8;
 
-		let carChargeCompleteTime = stack.addText(" " + Math.floor(info_data.time_to_charge) + ":" + minutes);
-		carChargeCompleteTime.textColor = new Color(colors.text.primary);
-		carChargeCompleteTime.font = Font.systemFont(12);
-		carChargeCompleteTime.textOpacity = 0.6;
+		let scooterChargeCompleteTime = stack.addText(" " + Math.floor(info_data.time_to_charge) + ":" + minutes);
+		scooterChargeCompleteTime.textColor = new Color(colors.text.primary);
+		scooterChargeCompleteTime.font = Font.systemFont(12);
+		scooterChargeCompleteTime.textOpacity = 0.6;
 
 		stack.setPadding(5, 5, 0, 5);
 	}
@@ -621,7 +621,7 @@ var battery_bar = { // battery bar draw functions
 		let batteryMaxCharge = new DrawContext();
 		batteryMaxCharge.opaque = false;
 		batteryMaxCharge.size = new Size(this.width, this.height)
-		if (info_data.car_state == "charging") {
+		if (info_data.scooter_state == "charging") {
 			batteryMaxCharge.setFillColor(new Color(colors.battery.charging));
 		} else {
 			batteryMaxCharge.setFillColor(new Color(colors.battery.max_charge));
@@ -662,10 +662,10 @@ var battery_bar = { // battery bar draw functions
 
 battery_bar.init();
 
-// Start processing our code (load the car data, then render)
+// Start processing our code (load the scooter data, then render)
 let response = await loadNiuData()
 
-addMapArea(); // after loading car data we can decide if we can display the map
+addMapArea(); // after loading scooter data we can decide if we can display the map
 addLastTrackMapArea();
 
 if (response == "ok") {
@@ -828,15 +828,15 @@ function parseInfoData(json) {
 	info_data.battery_range = json.data.estimatedMileage;
 	info_data.is_charging = json.data.isCharging == 1;
 	if (!info_data.battery_connected)
-		info_data.car_state = "disconnected";
+		info_data.scooter_state = "disconnected";
 	else if (json.data.isFortificationOn == 1)
-		info_data.car_state = "fortification_on";
+		info_data.scooter_state = "fortification_on";
 	else if (json.data.isAccOn == 1)
-		info_data.car_state = "acc_on";
+		info_data.scooter_state = "acc_on";
 	else
-		info_data.car_state = "acc_off"
+		info_data.scooter_state = "acc_off"
 	info_data.gps = json.data.gps;
-	info_data.gsm = Math.ceil(json.data.gsm / 6);
+	info_data.gsm = Math.ceil(json.data.gsm / 2.5);
 	info_data.fortification_on = (json.data.isFortificationOn == 1);
 	info_data.time_to_charge = json.data.leftTime;
 	info_data.longitude = json.data.postion.lng;
@@ -958,7 +958,7 @@ function getSampleData() {
 		"usable_battery_level": 88,
 		"centre_battery_level": 100,
 		"battery_range": 104,
-		"car_state": "Unknown",
+		"scooter_state": "Unknown",
 		"fortification_on": true,
 		"is_charging": false,
 		"time_to_charge": 10000,
