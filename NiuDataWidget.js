@@ -429,7 +429,11 @@ theme.drawScooterInfo = function (widget, info_data, colors) {
 		image_stack.imageSize = scaleImage(image_stack.image.size, 12)
 		image_stack.rightAlignImage();
 	}
-	let batteryText = battery.addStack().addText('  ' + Math.floor(info_data.usable_battery_level) + "%");
+	
+	if (info_data.battery_connected)
+		var batteryText = battery.addStack().addText('  ' + Math.floor(info_data.usable_battery_level) + "%");
+	else
+		var batteryText = battery.addStack().addText('  ' + Math.floor(info_data.centre_battery_level) + "%");
 	batteryText.font = Font.boldMonospacedSystemFont(12);
 	batteryText.rightAlignText();
 	if (info_data.is_charging)
