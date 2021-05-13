@@ -580,12 +580,9 @@ function presentWidget(widget) {
 }
 
 async function createWidget(info_data, colors) {
-	themeDebugArea();
-
 	let td_theme = FileManager.iCloud()
 	theme_file = td_theme.joinPath(td_theme.documentsDirectory(), "niu_data");
 	if (!td_theme.isDirectory(theme_file)) {
-		// create the directory
 		td_theme.createDirectory(theme_file);
 	}
 
@@ -846,10 +843,4 @@ function getSampleData() {
 		"gps": 0,
 		"gsm": 0
 	}
-}
-
-function themeDebugArea() {
-	// This is a working area for theme development (so errors will give you correct line numbers
-	// Once you've finished, move your code to a JS file in the niu_data folder
-
 }
