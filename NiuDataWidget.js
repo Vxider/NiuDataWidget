@@ -100,8 +100,8 @@ var theme = {
 		draw: async function (widget, info_data, colors) {
 			widget.setPadding(10, 10, 10, 10)
 			widget.backgroundColor = new Color(colors.background)
-			theme.drawScooterStatus(widget, info_data, colors);
-			theme.drawScooterInfo(widget, info_data, colors);
+			await theme.drawScooterStatus(widget, info_data, colors);
+			await theme.drawScooterInfo(widget, info_data, colors);
 			theme.drawLastTrack(widget, last_track_data, colors, true);
 		}
 	},
@@ -167,8 +167,8 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 			column_left.setPadding(5, 5, 5, 5);
 			column_left.layoutVertically();
 
-			theme.drawScooterStatus(column_left, info_data, colors);
-			theme.drawScooterInfo(column_left, info_data, colors);
+			await theme.drawScooterStatus(column_left, info_data, colors);
+			await theme.drawScooterInfo(column_left, info_data, colors);
 			column_left.addSpacer(null);
 			theme.drawLastTrack(column_left, last_track_data, colors, false);
 
@@ -198,12 +198,7 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 
 			column_right.topAlignContent();
 
-			let mapImageContext = new DrawContext()
-			mapImageContext.opaque = true
-			mapImageContext.size = mapImage.size;
-			mapImageContext.drawImageAtPoint(mapImage, new Point(0, 0))
-
-			let mapImageObj = column_right.addImage(mapImageContext.getImage());
+			let mapImageObj = column_right.addImage(mapImage);
 			mapImageObj.cornerRadius = 22;
 			mapImageObj.rightAlignImage();
 		}
@@ -227,8 +222,8 @@ function addMapArea() { // add the map area for medium size.
 			column_left.layoutVertically();
 			column_left.setPadding(5, 5, 5, 5);
 
-			theme.drawScooterStatus(column_left, info_data, colors);
-			theme.drawScooterInfo(column_left, info_data, colors);
+			await theme.drawScooterStatus(column_left, info_data, colors);
+			await theme.drawScooterInfo(column_left, info_data, colors);
 			theme.drawLastTrack(column_left, last_track_data, colors, false);
 
 			let center_padding = body.addSpacer(10);
@@ -260,10 +255,9 @@ function addMapArea() { // add the map area for medium size.
 			} else {
 				// use Apple Maps
 				column_right.url = `http://maps.apple.com/?ll=${info_data.latitude},${info_data.longitude}&q=Niu`;
-
 			}
 
-			var location = await getLocation(info_data.latitude, info_data.longitude)
+			var location = await getLocation(info_data.latitude, info_data.longitude);
 			if (location.length > 12)
 				location = [location.slice(0, 12), '\n', location.slice(12)].join('');
 
@@ -288,7 +282,7 @@ function addMapArea() { // add the map area for medium size.
 
 var _0xd9c9 = ["\x32\x30\x30\x2C\x32\x30\x30\x40\x32\x78", "", "\x32\x4F\x6F\x59\x6D\x41\x46\x71\x49\x74\x53\x30\x71\x54\x54\x74\x48\x70\x37\x56\x72\x45\x56\x42\x48\x67\x49\x45\x7A\x4E\x58\x41", "\x68\x74\x74\x70\x73\x3A\x2F\x2F\x77\x77\x77\x2E\x6D\x61\x70\x71\x75\x65\x73\x74\x61\x70\x69\x2E\x63\x6F\x6D\x2F\x73\x74\x61\x74\x69\x63\x6D\x61\x70\x2F\x76\x35\x2F\x6D\x61\x70\x3F\x6B\x65\x79\x3D", "\x26\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x73\x3D", "\x2C", "\x26\x7A\x6F\x6F\x6D\x3D", "\x26\x66\x6F\x72\x6D\x61\x74\x3D\x70\x6E\x67\x26\x73\x69\x7A\x65\x3D", "\x26\x74\x79\x70\x65\x3D", "\x74\x79\x70\x65", "\x6D\x61\x70", "\x26\x64\x65\x66\x61\x75\x6C\x74\x4D\x61\x72\x6B\x65\x72\x3D\x6D\x61\x72\x6B\x65\x72\x2D", "\x70\x6F\x73\x69\x74\x69\x6F\x6E", "\x6C\x6F\x61\x64\x49\x6D\x61\x67\x65"]; async function getMapImage(_0x4583x2, _0x4583x3, _0x4583x4, _0x4583x5) { var _0x4583x6 = _0xd9c9[0]; if (mapKey == null || mapKey == _0xd9c9[1]) { mapKey = _0xd9c9[2] }; let _0x4583x7 = `${_0xd9c9[3]}${mapKey}${_0xd9c9[4]}${_0x4583x3}${_0xd9c9[5]}${_0x4583x2}${_0xd9c9[6]}${_0x4583x4}${_0xd9c9[7]}${_0x4583x6}${_0xd9c9[8]}${_0x4583x5[_0xd9c9[10]][_0xd9c9[9]]}${_0xd9c9[11]}${_0x4583x5[_0xd9c9[10]][_0xd9c9[12]]}${_0xd9c9[1]}`; r = new Request(_0x4583x7); i = await r[_0xd9c9[13]](); return i }
 
-theme.drawScooterStatus = function (widget, info_data, colors) {
+theme.drawScooterStatus = async function (widget, info_data, colors) {
 	let stack = widget.addStack();
 	stack.topAlignContent();
 	stack.setPadding(0, 6, 0, 6);
@@ -396,8 +390,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		imageFileManager.writeImage(imageFile, imageContent);
 	}
 
-		let imageStack = stack.addImage(imageContent);
-	}
+	let imageStack = stack.addImage(imageContent);
 
 	stack.addSpacer(null);
 
@@ -478,7 +471,25 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		lastUpdateText.font = Font.systemFont(8)
 		lastUpdateText.rightAlignText()
 	}
-	column_right.addSpacer(10);
+
+	column_right.addSpacer(3);
+
+	var location_text = await getLocation(info_data.latitude, info_data.longitude)
+
+	let location = column_right.addStack();
+	location.layoutHorizontally();
+	location.addSpacer(null);
+
+	let mapIcon = location.addImage(SFSymbol.named("location.fill").image);
+	mapIcon.imageSize = scaleImage(mapIcon.image.size, 8)
+	mapIcon.tintColor = new Color(colors.icons.default);
+
+	location.addSpacer(1);
+
+	let location_stack = location.addText(location_text);
+	location_stack.font = Font.systemFont(8);
+	location_stack.textColor = new Color(colors.text.primary);
+	location_stack.rightAlignText();
 }
 
 theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
@@ -665,12 +676,16 @@ async function getLocation(lat, lng) {
 	var req = await new Request('https://restapi.amap.com/v3/geocode/regeo?key=e52862f1882aadbd8c0318ce29af21a4&location=' + lng + ',' + lat + '&poitype=&radius=1000&extensions=all&batch=false&roadlevel=0');
 	var json = await req.loadJSON();
 	if (json.status == 1) {
-		var address = json.regeocode.formatted_address
-		var province = json.regeocode.addressComponent.province
-		var city = json.regeocode.addressComponent.city
-		address = address.replace(province, "")
-		address = address.replace(city, "")
-		return address;
+		// var address = json.regeocode.formatted_address
+		// var province = json.regeocode.addressComponent.province
+		// var city = json.regeocode.addressComponent.city
+		// var district = json.regeocode.addressComponent.district
+		// var township = json.regeocode.addressComponent.township
+		// address = address.replace(province, "")
+		// address = address.replace(city, "")
+		// address = address.replace(district, "")
+		var light_address = json.regeocode.pois[0].name
+		return light_address;
 	}
 	return ''
 }
