@@ -401,6 +401,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	let estimatedMileage = column_right.addStack();
 	estimatedMileage.layoutHorizontally();
 	estimatedMileage.addSpacer(null);
+	let estimatedMileageText = estimatedMileage.addStack().addText(Math.floor(info_data.battery_range) + "KM");
 	estimatedMileageText.font = Font.boldMonospacedSystemFont(19);
 	estimatedMileageText.textColor = new Color(colors.text.distance);
 	estimatedMileageText.rightAlignText();
