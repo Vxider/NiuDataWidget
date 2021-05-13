@@ -632,18 +632,29 @@ async function fetchInfoData(token) {
 	return json;
 }
 
-async function fetchLastTrackData(token) {
-	var req = await new Request('https://app-api.niu.com/v5/track/list/v2');
-	req.method = 'POST';
-	req.headers = {
-		'Content-Type': 'application/json',
-		'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
-		'token': token
-	};
-	req.body = '{"sn":"' + sn + '","index":"0","token":"' + token + '","pagesize":1}';
-	var json = await req.loadJSON();
-	console.log("FetchLastTrackData:" + JSON.stringify(json));
-	return json;
+async function loadLastTrackData(token, from_local = true) {
+	if (from_local)
+	{
+		let fileManager = FileManager.local();
+		let file = fileManager.joinPath(fileManager.cacheDirectory(), 'niu_last_track_' + sn + '.dat');
+		if (fileManager.fileExists(file))
+			return fileManager.readString(file);
+		else
+			return loadLastTrackData(token, false);
+	}
+	else
+	{
+		var req = await new Request('https://app-api.niu.com/v5/track/list/v2');
+		req.method = 'POST';
+		req.headers = {
+			'Content-Type': 'application/json',
+			'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+			'token': token
+		};
+		req.body = '{"sn":"' + sn + '","index":"0","token":"' + token + '","pagesize":1}';
+		var json = await req.loadJSON();
+		return json;
+	}
 }
 
 async function getLocation(lat, lng) {
@@ -754,7 +765,7 @@ async function loadNiuData() {
 				token = await loadToken(true);
 				infoJson = await fetchInfoData(token);
 			}
-			var lastTrackJSON = await fetchLastTrackData(token);
+			var lastTrackJSON = await loadLastTrackData(token, (infoJson.data.isAccOn == 1));
 			var scooterDetailJSON = await fetchScooterDetail(token, sn);
 
 			backupManager.writeString(backupLocation, JSON.stringify(infoJson));
