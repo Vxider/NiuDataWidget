@@ -45,12 +45,13 @@ var colors = {
 if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
 	colors.background = "#333333";
 	colors.text.distance = "#FFFFFF";
-	colors.text.primary = "#ffffff";
-	colors.icons.default = "#ffffff";
+	colors.text.primary = "#FFFFFF";
+	colors.icons.default = "#FFFFFF";
 	colors.map.type = "dark";
 	colors.map.position = "CB4335";
 }
 
+battery_icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFcAAAAtCAYAAADbcffLAAADIUlEQVRoBe2bzWsTQRTA501WENRTEeoXCGKTNKmtCBUErdWr6LXpxVsP/gOCB73oTfSu3ork7s0PtO1FEYSaNG5E/ECpCm0vfoCH7D7fJiWks2/JdJlT9i2UzvzmzYP3IwyTzQwo5ik1x6cVYkWBOk3Dh+hvFxM2yOgvFfdNASxBCNWV4vJCmmKhd1L5Q/kIBvoesXO9POttQPVMg5qrFWqft+OiK7fsl08h6Ec0eWg7CTIUu64RL9aL9Ze2NbflFvyJwzkIX9OkvbYTMxq3Abnw5MrRlY829esoiMQ+oH8itr+xIVo27/cP60ToUvNYtL6et50gcWq67E+ctfHgKVQztCvgnn8K8JpqhdVGqfGTCxhUVnx3Yp/OtSq0Y7pFNe6M1QnBDLGFGDeAR2LPGKzTJbGNfP0uOzbg0B9984NKvDPqjwMA3jbLRQW8MyMwWnMPGKzTpU8syzMEIWw9TCj3YALfgiO5u7eQzU7WloJtOtjDxZusvVswofTdGBC5bjyyWUQuq8UNFLluPLJZRC6rxQ303KTJdhb6los9Br4rBfMqaF0XuT1WHDX3K4VXVc5Tsiw4MhpPg5dFbtyKKzIscl2pZPKIXEaKKyRyXZlk8ohcRoorJHJdmWTyiFxGiiskcl2ZZPKIXEaKKyRyXZmM51kVuXEpbgjivLy4caOyN0vnrVgY3BC5vVpSthuFGnvyQ5aFlEJtpolcG0spY0RuSnE200SujaWUMSI3pTibaZHc31xgqVEa5niWWL55nH4P4x78xVGTRXJpX8Y8njfL0EyhHRgkOIBVGxF0hBQW6RxqPhZMZ1NL78dVGHjVzSOVsZBBBdH5XIDWLALe5Gqk39EXOW4yaF+LUvjcHJB+soFQ45Q/Ul9KjuiM6Ebh7Qv69D7tFyjjXQOPbcRG0e3dQhDCHLXXutOlkWRgQ2u8kjRo8rbcZnH5C92xukSD62aA9LsG1sJQXaiP1D91SZ9GW24UE11eyyk1KUsEZwyfBKgn/dHaK240ibFvc8b8sSkEVdm8WBHd/WWP9iclHQD+h3ZQX5Hu/qLGqu0aa9b9HyijvIXRaGahAAAAAElFTkSuQmCC'
 // set up a container for our data. 
 
 //NOTE: these values may not align with the data names from our service. Review the documention for the expected values and their names.
@@ -66,6 +67,7 @@ var info_data = {
 	centre_battery_level: -1,
 	battery_range: -1,
 	scooter_state: "Unknown",
+	scooter_img: "",
 	is_charging: false,
 	fortification_on: true,
 	time_to_charge: 10000,
@@ -403,33 +405,41 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	let estimatedMileage = column_right.addStack();
 	estimatedMileage.layoutHorizontally();
 	estimatedMileage.addSpacer(null);
-	let estimatedMileageText = estimatedMileage.addStack().addText(Math.floor(info_data.battery_range) + "KM");
-	estimatedMileageText.font = Font.boldMonospacedSystemFont(20);
+	estimatedMileageText.font = Font.boldMonospacedSystemFont(19);
 	estimatedMileageText.textColor = new Color(colors.text.distance);
 	estimatedMileageText.rightAlignText();
 
-	column_right.addSpacer(5);
+	column_right.addSpacer(3);
 
 	let battery = column_right.addStack();
 	battery.layoutHorizontally();
+	battery.centerAlignContent();
 	battery.addSpacer(null);
 	if (info_data.is_charging)
 	{
 		var battery_image = SFSymbol.named("battery.100.bolt").image;
 		var image_stack = battery.addImage(battery_image);
 		image_stack.tintColor = new Color(colors.battery.charging);
-		image_stack.imageSize = scaleImage(image_stack.image.size, 12)
+		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
 		image_stack.rightAlignImage();
 	}
 	else if (info_data.battery_connected)
 	{
-		if (info_data.usable_battery_level > 50)
-			var battery_image = SFSymbol.named("battery.100").image;
-		else 
-			var battery_image = SFSymbol.named("battery.25").image;
-		var image_stack = battery.addImage(battery_image);
-		image_stack.tintColor = new Color(colors.battery.default);
-		image_stack.imageSize = scaleImage(image_stack.image.size, 12)
+		let req = new Request(battery_icon)
+		let battery_image = await req.loadImage()
+		let batteryImageContext = new DrawContext()
+		batteryImageContext.opaque = true
+		batteryImageContext.size = battery_image.size;
+		batteryImageContext.setFillColor(new Color(colors.background));
+		batteryImageContext.fillRect(new Rect(0, 0, battery_image.size.width, battery_image.size.height))
+		batteryImageContext.drawImageAtPoint(battery_image, new Point(0, 0))
+		batteryImageContext.setFillColor(new Color(colors.battery.default));
+
+		var bar_width = (info_data.usable_battery_level / 100) * (battery_image.size.width - 28);
+		batteryImageContext.fillRect(new Rect(10, 8, bar_width, battery_image.size.height - 17))
+
+		var image_stack = battery.addImage(batteryImageContext.getImage());
+		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
 		image_stack.rightAlignImage();
 	}
 	else
@@ -437,14 +447,14 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		var battery_image = SFSymbol.named("minus.plus.batteryblock.fill").image;
 		var image_stack = battery.addImage(battery_image);
 		image_stack.tintColor = new Color(colors.battery.centreCtrl);
-		image_stack.imageSize = scaleImage(image_stack.image.size, 12)
+		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
 		image_stack.rightAlignImage();
 	}
 	
 	if (info_data.battery_connected)
-		var batteryText = battery.addStack().addText('  ' + Math.floor(info_data.usable_battery_level) + "%");
+		var batteryText = battery.addStack().addText(' ' + Math.floor(info_data.usable_battery_level) + "%");
 	else
-		var batteryText = battery.addStack().addText('  ' + Math.floor(info_data.centre_battery_level) + "%");
+		var batteryText = battery.addStack().addText(' ' + Math.floor(info_data.centre_battery_level) + "%");
 	batteryText.font = Font.boldMonospacedSystemFont(12);
 	batteryText.rightAlignText();
 	if (info_data.is_charging)
@@ -454,7 +464,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	else
 		batteryText.textColor = new Color(colors.battery.centreCtrl)
 
-	column_right.addSpacer(null);
+	column_right.addSpacer(1);
 	if (info_data.last_contact.length > 0) {
 		let lastUpdate = column_right.addStack();
 		lastUpdate.layoutHorizontally();
