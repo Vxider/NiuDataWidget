@@ -370,16 +370,27 @@ theme.drawScooterStatus = function (widget, info_data, colors) {
 	}
 }
 
-theme.drawScooterInfo = function (widget, info_data, colors) {
+theme.drawScooterInfo = async function (widget, info_data, colors) {
 	let stack = widget.addStack();
 	stack.centerAlignContent();
 	stack.layoutHorizontally();
 
-	let imageFileManager = FileManager.local();
-	var imageFile = imageFileManager.joinPath(imageFileManager.cacheDirectory(), 'niu_scooter_img_' + sn + '.image');
+
+	let imageFileManager = FileManager.iCloud();
+	var imageFile = imageFileManager.joinPath(imageFileManager.documentsDirectory(), 'niu_data/niu_scooter_img_' + sn + '.png');
+
 	if (imageFileManager.fileExists(imageFile))
 	{
+		imageFileManager.downloadFileFromiCloud(imageFile);
 		var imageContent = imageFileManager.readImage(imageFile);
+	}
+	else
+	{
+		var req = new Request(info_data.scooter_img);
+		var imageContent = await req.loadImage();
+		imageFileManager.writeImage(imageFile, imageContent);
+	}
+
 		let imageStack = stack.addImage(imageContent);
 	}
 
@@ -710,15 +721,7 @@ function parseInfoData(json) {
 
 async function parseScooterDetail(json) {
 	info_data.scooter_name = json.data.scooter_name;
-
-	let imageFileManager = FileManager.local();
-	var imageFile = imageFileManager.joinPath(imageFileManager.cacheDirectory(), 'niu_scooter_img_' + sn + '.image');
-	if (!imageFileManager.fileExists(imageFile))
-	{
-		var req = new Request(json.data.index_scooter_img);
-		var imageContent = await req.loadImage();
-		imageFileManager.writeImage(imageFile, imageContent);
-	}
+	info_data.scooter_img = json.data.list_scooter_img;
 }
 
 function parseLastTrackData(json) {
