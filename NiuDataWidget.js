@@ -292,7 +292,6 @@ theme.drawScooterStatus = function (widget, info_data, colors) {
 	let stack = widget.addStack();
 	stack.topAlignContent();
 	stack.setPadding(0, 6, 0, 6);
-	// stack.layoutVertically();
 
 	var column_left = stack.addStack();
 	column_left.layoutVertically();
@@ -312,28 +311,30 @@ theme.drawScooterStatus = function (widget, info_data, colors) {
 		GPStext1 = GPStext1 + "•";
 	var GPStext2 = '';
 	for (i = info_data.gps; i < 5; i++)
-		GPStext2 = GPStext2 + "◦";
+		GPStext2 = GPStext2 + "•";
 
 	let gpsLabel1 = signal_info.addText(GPStext1)
 	gpsLabel1.font = Font.boldMonospacedSystemFont(8)
 	gpsLabel1.textColor = new Color(colors.text.primary);
 	let gpsLabel2 = signal_info.addText(GPStext2)
 	gpsLabel2.font = Font.boldMonospacedSystemFont(8)
-	gpsLabel2.textColor = new Color("#CCCCCC");
+	gpsLabel2.textColor = new Color(colors.text.primary);
+	gpsLabel2.textOpacity = 0.3
 
 	var GSMtext1 = "GSM";
 	for (i = 0; i < info_data.gsm && i < 5; i++)
 		GSMtext1 = GSMtext1 + "•";
 	var GSMtext2 = "";
 	for (i = info_data.gsm; i < 5; i++)
-		GSMtext2 = GSMtext2 + "◦";
+		GSMtext2 = GSMtext2 + "•";
 
 	let gsmLabel1 = signal_info.addText(' ' + GSMtext1);
 	gsmLabel1.font = Font.boldMonospacedSystemFont(8);
 	gsmLabel1.textColor = new Color(colors.text.primary);
 	let gsmLabel2 = signal_info.addText(GSMtext2);
 	gsmLabel2.font = Font.boldMonospacedSystemFont(8);
-	gsmLabel2.textColor = new Color("#CCCCCC");
+	gsmLabel2.textColor = new Color(colors.text.primary);
+	gsmLabel2.textOpacity = 0.3
 
 	stack.addSpacer(null)
 	switch (info_data.scooter_state) {
@@ -474,7 +475,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		let lastUpdateText = lastUpdate.addStack().addText(info_data.last_contact)
 		lastUpdateText.textColor = new Color(colors.text.primary);
 		lastUpdateText.textOpacity = 0.6
-		lastUpdateText.font = Font.systemFont(12)
+		lastUpdateText.font = Font.systemFont(8)
 		lastUpdateText.rightAlignText()
 	}
 	column_right.addSpacer(10);
@@ -491,6 +492,7 @@ theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
 	mapIcon.imageSize = scaleImage(mapIcon.image.size, 8)
 	mapIcon.tintColor = new Color(colors.icons.default);
 
+	stack.addSpacer(2);
 	let distance = stack.addText((last_track_data.distance / 1000).toFixed(1) + 'KM')
 	distance.textColor = new Color(colors.text.primary);
 	distance.font = Font.systemFont(10)
@@ -500,6 +502,7 @@ theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
 	clockIcon.imageSize = scaleImage(clockIcon.image.size, 8)
 	clockIcon.tintColor = new Color(colors.icons.default);
 
+	stack.addSpacer(2);
 	if(is_small)
 		var clock = stack.addText(Math.round(last_track_data.ridingTime / 60) + "m")
 	else
@@ -512,6 +515,7 @@ theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
 	batteryIcon.imageSize = scaleImage(batteryIcon.image.size, 8)
 	batteryIcon.tintColor = new Color(colors.icons.default);
 
+	stack.addSpacer(2);
 	let battery = stack.addText(last_track_data.power_consumption + "%")
 	battery.textColor = new Color(colors.text.primary);
 	battery.font = Font.systemFont(10)
