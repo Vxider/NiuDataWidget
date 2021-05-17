@@ -750,7 +750,7 @@ function parseInfoData(json) {
 	}
 }
 
-async function parseScooterDetail(json) {
+function parseScooterDetail(json) {
 	info_data.scooter_name = json.data.scooter_name;
 	info_data.scooter_img = json.data.list_scooter_img;
 }
@@ -783,7 +783,7 @@ async function loadNiuData() {
 			backupManager.writeString(backupLocation, JSON.stringify(infoJson));
 			parseInfoData(infoJson);
 			parseLastTrackData(lastTrackJSON);
-			await parseScooterDetail(scooterDetailJSON);
+			parseScooterDetail(scooterDetailJSON);
 		} catch (e) {
 			// offline, grab the backup copy
 			if (backupManager.fileExists(backupLocation)) {
