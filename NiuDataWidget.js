@@ -9,8 +9,7 @@
 //
 
 {
-	var show_last_track_map = true;
-	var hide_map = true;
+	var show_map = true;
 	var debug_size = "medium"; // which size should the widget try to run as when run through Scriptable. (small, medium, large)
 	var is_dark_mode_working = true;
 }
@@ -160,7 +159,7 @@ theme.medium.init = theme.small.init;
 theme.medium.draw = theme.small.draw;
 
 function addLastTrackMapArea() { // add the last track map area for medium size.
-	if (show_last_track_map && hide_map) {
+	if (show_last_track_map && ! show_map) {
 		// only if we have everything we need, otherwise leave the medium size as is.
 
 		theme.medium.draw = async function (widget, info_data, colors) {
@@ -213,7 +212,7 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 }
 
 function addMapArea() { // add the map area for medium size.
-	if (!show_last_track_map && !hide_map && info_data.longitude != -1 && info_data.latitude != -1) {
+	if (!show_last_track_map && show_map && info_data.longitude != -1 && info_data.latitude != -1) {
 		// only if we have everything we need, otherwise leave the medium size as is.
 
 		const mapZoomLevel = 15;
@@ -264,22 +263,7 @@ function addMapArea() { // add the map area for medium size.
 				column_right.url = `http://maps.apple.com/?ll=${info_data.latitude},${info_data.longitude}&q=Niu`;
 			}
 
-			var location = await getLocation(info_data.latitude, info_data.longitude);
-			if (location.length > 12)
-				location = [location.slice(0, 12), '\n', location.slice(12)].join('');
-
-			let mapImageContext = new DrawContext()
-			mapImageContext.opaque = true
-			mapImageContext.size = mapImage.size;
-			mapImageContext.drawImageAtPoint(mapImage, new Point(0, 0))
-			mapImageContext.setFillColor(new Color("#EAEAEA"))
-			mapImageContext.fillRect(new Rect(0, 0, mapImage.size.width, 80))
-			mapImageContext.setFont(Font.systemFont(24))
-			mapImageContext.setTextAlignedRight()
-			mapImageContext.setTextColor(new Color("#898989"))
-			mapImageContext.drawText(location, new Point(20, 10))
-
-			let mapImageObj = column_right.addImage(mapImageContext.getImage());
+			let mapImageObj = column_right.addImage(mapImage);
 
 			mapImageObj.cornerRadius = 22;
 			mapImageObj.rightAlignImage();
