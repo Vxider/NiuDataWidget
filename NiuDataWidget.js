@@ -27,7 +27,7 @@ var colors = {
 	},
 	battery: {
 		charging: "#ddbb22",
-		centreCtrl: "#FF0000",
+		centreCtrl: "#E74C3C",
 		default: "#2BD82E"
 	},
 	icons: {
@@ -42,7 +42,7 @@ var colors = {
 }
 
 if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
-	colors.background = "#333333";
+	colors.background = "#000000";
 	colors.text.distance = "#FFFFFF";
 	colors.text.primary = "#FFFFFF";
 	colors.icons.default = "#FFFFFF";
@@ -58,7 +58,7 @@ power_on_icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP
 
 power_off_icon = 'data:image/png;base64,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'
 
-no_battery_icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAAB2klEQVRIibXWsWvUcBTA8e/7JQGHrq0XF1cLdpSUXg5ahILHXUFw0X/BSUd1dbP+D7rYQRA0qINtlYu1dhBEB/EPuFyva8WCuTyH9mIunm28Jm/7JT9+H97L4+UnUav+CRHbGtjLMy/f9qgojCIGZW5g4s1+c7FWGWScZBn4ClwYmPjd3kr9XBWQAPSuLszoL7MOXAS+20aXpp+/75YOpVhs3qDMVYFJdpHLrIzTI0l07ecP544ZPus2F87Xnm31xUkuI3wpBVJcFbl1Ziq+n2YUtfxdkJtu0HkaXWlMY+v6URm/WYm9NEnr95q+p4ZthCgLKRC7QegA5LD/D+Gj+yKcPzoXE7UaO8MFYB+ijWvuq84esUxeRsXLLg3opTG71npt/8apsVHoMNwgFDcIh6W0VHlcJmaOeVcqdhxUKnYSVBqWQlHL10z3lY4ZYKfgXkuVR5O2vnGD0Mt02zD+hdugTwpi29nFn8nQ9rsoLojnBp2iWeYnyMi46rXr86ryIT+CVoHbRQEgBrk+Zjb+HSoP0mY42LfvAg8RooLQyWUUIoTV/WTqXv7bnCpymY38PEuFUszSDXLXgtIhGH8HqQQC2F3xziaJswnMKnyuDALoNxdrsYlfi3DwG4z/D+QBufbHAAAAAElFTkSuQmCC'
+no_battery_icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAACeklEQVRIie2VP0xTURSHv/N4GJuoSUnE9m0aNCYwODBgeUxM0GJCImww4KQJjv6JiSa6uDPg4qKTkYhJW5yIyGvrxERIDBEGE9sGiAgMVEzfceAVWqQC9rHx2+65v3e/c+659z440YlO5JMEYK6v+VTDZvAZwgBK2GdGFuH1j9Orj5vfzm2VgiZAQyH4FLiH+ozcloVyP7gZVOBhBRhlAMBQo/1CcjrjJzXbY9uiOAKD5WBjJyvAbyiAFU+lyhklmfuZczHbl00PJ1JSbW5f8HHKKyplHOg8Htm+ghUyotwy4FrBNIO7E3JHlHS516+t/obIoBV3Pu03GU46o8CoN1wELtUMVsj8Ms3oxfdTP/O9kUa2jLsIUYXLnmNekCT17khoPLNEUdq0Th8J7J7i0ik8wqlepCht4Q/Oci5q9yG8BM5W8W6ADIUTzhh4T+Ze8FHlQd+U1vuHFKQ/nHDGSuDvgKVCR9mFP5TyvZFG/W18pXqle7VOUZpML41XAg9EcXIx+1BfK3rbSqRfeD3dgbqG2FLUgggTAKp0YxAQxfEs5zAZNgBWA6tPFJ4D2UNmjeHWpQFcIVYel6IWrGRqRtTtFHU7rWRqhqIWKrN2Y//V03LlYvYGcKYstCyu0RmamJ4FyPZcvypa9xEIlXk2/HhADr4B8pdHawYLLFSsqHSFJqZn89FISz4aabHin79oUW/s4S74UXGiYmQQyHa3t6oYkyrGZLa7vRUhUMklXnOPj3ydhDXFbKq54tB4ZglkiMP0GlRdHbLiUyu+/J22n0HpB9armoQ1Vb1pJdPvtoc+KtfVcR6TYVSjwBUvPI9qQo36ESs+tVLy/gEwFO/qY+s2dQAAAABJRU5ErkJggg=='
 
 // set up a container for our data. 
 
@@ -291,7 +291,7 @@ theme.drawScooterStatus = async function (widget, info_data, colors) {
 	signal_info.layoutHorizontally();
 	signal_info.setPadding(3, 0, 3, 0);
 
-	var GPStext1 = "GPS";
+	var GPStext1 = "GPS ";
 	for (i = 0; i < info_data.gps && i < 5; i++)
 		GPStext1 = GPStext1 + "•";
 	var GPStext2 = '';
@@ -306,7 +306,7 @@ theme.drawScooterStatus = async function (widget, info_data, colors) {
 	gpsLabel2.textColor = new Color(colors.text.primary);
 	gpsLabel2.textOpacity = 0.3
 
-	var GSMtext1 = "GSM";
+	var GSMtext1 = "  GSM ";
 	for (i = 0; i < info_data.gsm && i < 5; i++)
 		GSMtext1 = GSMtext1 + "•";
 	var GSMtext2 = "";
@@ -432,7 +432,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	}
 	else
 	{
-		var battery_image = SFSymbol.named("minus.plus.batteryblock.fill").image;
+		var battery_image = SFSymbol.named("cpu").image;
 		var image_stack = battery.addImage(battery_image);
 		image_stack.tintColor = new Color(colors.battery.centreCtrl);
 		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
@@ -452,18 +452,6 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	else
 		batteryText.textColor = new Color(colors.battery.centreCtrl)
 
-	column_right.addSpacer(1);
-	if (info_data.last_contact.length > 0) {
-		let lastUpdate = column_right.addStack();
-		lastUpdate.layoutHorizontally();
-		lastUpdate.addSpacer(null);
-		let lastUpdateText = lastUpdate.addStack().addText(info_data.last_contact)
-		lastUpdateText.textColor = new Color(colors.text.primary);
-		lastUpdateText.textOpacity = 0.6
-		lastUpdateText.font = Font.systemFont(8)
-		lastUpdateText.rightAlignText()
-	}
-
 	column_right.addSpacer(3);
 
 	var location_text = await getLocation(info_data.latitude, info_data.longitude)
@@ -482,6 +470,22 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	location_stack.font = Font.systemFont(8);
 	location_stack.textColor = new Color(colors.text.primary);
 	location_stack.rightAlignText();
+
+	column_right.addSpacer(null);
+
+	if (info_data.last_contact.length > 0) {
+		let lastUpdate = column_right.addStack();
+		lastUpdate.layoutHorizontally();
+		lastUpdate.addSpacer(null);
+		let lastUpdateText = lastUpdate.addStack().addText(info_data.last_contact)
+		lastUpdateText.textColor = new Color(colors.text.primary);
+		lastUpdateText.textOpacity = 0.6
+		lastUpdateText.font = Font.systemFont(8)
+		lastUpdateText.rightAlignText()
+	}
+
+	column_right.addSpacer(1);
+
 }
 
 theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
