@@ -4,9 +4,8 @@
 
 Scriptable小牛电动车信息显示小组件
 
-<img src="screenshots/screen_001.jpeg" width="400" /> &nbsp; 
-<img src="screenshots/screen_002.jpeg" width="400" /> &nbsp;
-<img src="screenshots/screen_003.jpeg" width="400" />
+<img src="screenshots/screen_001.jpg" width="400" />
+<img src="screenshots/screen_002.jpg" width="400" />
 
 ## 用法
 ### 安装
