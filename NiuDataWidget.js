@@ -42,7 +42,7 @@ var colors = {
 }
 
 if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
-	colors.background = "#000000";
+	colors.background = "#1E1E1E";
 	colors.text.distance = "#FFFFFF";
 	colors.text.primary = "#FFFFFF";
 	colors.icons.default = "#FFFFFF";
