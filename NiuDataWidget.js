@@ -577,10 +577,10 @@ function presentWidget(widget) {
 }
 
 async function createWidget(info_data, colors) {
-	let td_theme = FileManager.iCloud()
-	theme_file = td_theme.joinPath(td_theme.documentsDirectory(), "niu_data");
-	if (!td_theme.isDirectory(theme_file)) {
-		td_theme.createDirectory(theme_file);
+	let td_folder = FileManager.iCloud()
+	folder_file = td_folder.joinPath(td_folder.documentsDirectory(), "niu_data");
+	if (!td_folder.isDirectory(folder_file)) {
+		td_folder.createDirectory(folder_file);
 	}
 
 	let w = new ListWidget()
@@ -616,16 +616,22 @@ function drawErrorWidget(w, reason) {
 }
 
 async function fetchScooterDetail(token, sn) {
-	var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
-	req.method = 'GET';
-	req.headers = {
-		'Content-Type': 'application/x-www-form-urlencoded',
-		'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
-		'token': token
-	};
-	var json = await req.loadJSON();
-	console.log(JSON.stringify(json));
-	return json;
+	let fileManager = FileManager.local();
+	let file = fileManager.joinPath(fileManager.cacheDirectory(), 'niu_detail_' + sn + '.dat');
+	if (fileManager.fileExists(file))
+		return JSON.parse(fileManager.readString(file));
+	else {
+		var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
+		req.method = 'GET';
+		req.headers = {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+			'token': token
+		};
+		var json = await req.loadJSON();
+		fileManager.writeString(file, JSON.stringify(json));
+		return json;
+	}
 }
 
 async function fetchInfoData(token) {
@@ -636,20 +642,16 @@ async function fetchInfoData(token) {
 		'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
 		'token': token
 	};
-	var json = await req.loadJSON();
-	console.log("FetchInfoData:" + JSON.stringify(json));
-	return json;
+	var data = await req.loadJSON();
+	return data;
 }
 
-async function loadLastTrackData(token, from_local = true) {
-	if (from_local)
+async function loadLastTrackData(token, sn, from_local = true) {
+	let fileManager = FileManager.local();
+	let file = fileManager.joinPath(fileManager.cacheDirectory(), 'niu_last_track_' + sn + '.dat');
+	if (from_local && fileManager.fileExists(file))
 	{
-		let fileManager = FileManager.local();
-		let file = fileManager.joinPath(fileManager.cacheDirectory(), 'niu_last_track_' + sn + '.dat');
-		if (fileManager.fileExists(file))
-			return fileManager.readString(file);
-		else
-			return loadLastTrackData(token, false);
+		return JSON.parse(fileManager.readString(file));
 	}
 	else
 	{
@@ -662,6 +664,7 @@ async function loadLastTrackData(token, from_local = true) {
 		};
 		req.body = '{"sn":"' + sn + '","index":"0","token":"' + token + '","pagesize":1}';
 		var json = await req.loadJSON();
+		fileManager.writeString(file, JSON.stringify(json));
 		return json;
 	}
 }
@@ -750,30 +753,32 @@ function parseLastTrackData(json) {
 async function loadNiuData() {
 
 	if (username != null && username != "" && password != null && password != "" && sn != null && sn != "") {
-		var backupManager = FileManager.local();
-		var backupLocation = backupManager.joinPath(backupManager.cacheDirectory(), 'niu_widget_last_updated_' + sn + '.txt')
-
 		try {
 			var token = await loadToken();
 			var infoJson = await fetchInfoData(token);
-			if (infoJson.status == 1131) {
+			if (infoJson != null && infoJson.status == 1131) {
 				token = await loadToken(true);
 				infoJson = await fetchInfoData(token);
 			}
-			var lastTrackJSON = await loadLastTrackData(token, (infoJson.data.isAccOn == 1));
-			var scooterDetailJSON = await fetchScooterDetail(token, sn);
+			if (infoJson == null)
+				return "NETWORK EXCEPTION";
 
-			backupManager.writeString(backupLocation, JSON.stringify(infoJson));
+			var lastTrackJSON = await loadLastTrackData(token, sn, (infoJson.data.isAccOn == 1));
+			if (lastTrackJSON == null)
+				return "NETWORK EXCEPTION";
+
+			var scooterDetailJSON = await fetchScooterDetail(token, sn);
+			if (scooterDetailJSON == null)
+				return "NETWORK EXCEPTION";
+
+			console.log("last_track:" + JSON.stringify(lastTrackJSON));
+			console.log("scooter_detail:" + JSON.stringify(scooterDetailJSON));
+
 			parseInfoData(infoJson);
 			parseLastTrackData(lastTrackJSON);
 			parseScooterDetail(scooterDetailJSON);
 		} catch (e) {
 			// offline, grab the backup copy
-			if (backupManager.fileExists(backupLocation)) {
-				var jsonImport = backupManager.readString(backupLocation);
-				var infoJson = JSON.parse(jsonImport);
-				parseInfoData(infoJson);
-			}
 			return e;
 		}
 	} else {
