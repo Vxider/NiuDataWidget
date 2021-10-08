@@ -454,7 +454,8 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 
 	column_right.addSpacer(3);
 
-	var location_text = await getLocation(info_data.latitude, info_data.longitude)
+	const address = await Location.reverseGeocode(info_data.latitude, info_data.longitude);
+	var location_text = address[0].name;
 
 	let location = column_right.addStack();
 	location.layoutHorizontally();
@@ -663,24 +664,6 @@ async function loadLastTrackData(token, from_local = true) {
 		var json = await req.loadJSON();
 		return json;
 	}
-}
-
-async function getLocation(lat, lng) {
-	var req = await new Request('https://restapi.amap.com/v3/geocode/regeo?key=e52862f1882aadbd8c0318ce29af21a4&location=' + lng + ',' + lat + '&poitype=&radius=1000&extensions=all&batch=false&roadlevel=0');
-	var json = await req.loadJSON();
-	if (json.status == 1) {
-		// var address = json.regeocode.formatted_address
-		// var province = json.regeocode.addressComponent.province
-		// var city = json.regeocode.addressComponent.city
-		// var district = json.regeocode.addressComponent.district
-		// var township = json.regeocode.addressComponent.township
-		// address = address.replace(province, "")
-		// address = address.replace(city, "")
-		// address = address.replace(district, "")
-		var light_address = json.regeocode.pois[0].name
-		return light_address;
-	}
-	return ''
 }
 
 async function loadToken(force = false) {
