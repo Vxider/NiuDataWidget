@@ -629,7 +629,7 @@ async function fetchScooterDetail(token, sn) {
 		req.method = 'GET';
 		req.headers = {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+			'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
 			'token': token
 		};
 		var json = await req.loadJSON();
@@ -682,7 +682,7 @@ async function loadToken(force = false) {
 		request_.method = "POST";
 		request_.headers = {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
+			'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic'
 		};
 		request_.body = 'account=' + username + '&password=' + password + '&app_id=niu_03cn0n7v&scope=base&countryCode=86&grant_type=password';
 		var json = await request_.loadJSON();
