@@ -187,13 +187,13 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 
 			var mapImage;
 
-			configFilePath = 'niu_last_track_id_' + sn + '.data';
-			imageFilePath = 'niu_last_track_thumb_' + sn + '.png';
+			configFilePath = 'niu_data/niu_last_track_id_' + sn + '.data';
+			imageFilePath = 'niu_data/niu_last_track_thumb_' + sn + '.png';
 
 			var last_track_id = '';
-			let imageManager = FileManager.local();
-			let configFile = imageManager.joinPath(imageManager.cacheDirectory(), configFilePath);
-			let imageFile = imageManager.joinPath(imageManager.cacheDirectory(), imageFilePath);
+			let imageManager = FileManager.iCloud();
+			let configFile = imageManager.joinPath(imageManager.documentsDirectory(), configFilePath);
+			let imageFile = imageManager.joinPath(imageManager.documentsDirectory(), imageFilePath);
 			if (imageManager.fileExists(configFile))
 				last_track_id = imageManager.readString(configFile);
 			if (last_track_id == last_track_data.trackId && imageManager.fileExists(imageFile))
@@ -242,10 +242,10 @@ function addMapArea() { // add the map area for medium size.
 
 			roundedLat = Math.round(info_data.latitude * 2000) / 2000;
 			roundedLong = Math.round(info_data.longitude * 2000) / 2000;
-			storedFile = "niu_widget_map_" + roundedLat * 2000 + "_" + roundedLong * 2000 + ".image";
+			storedFile = "niu_data/niu_widget_map_" + roundedLat * 2000 + "_" + roundedLong * 2000 + ".image";
 
-			let map_image_manager = FileManager.local();
-			let map_image_file = map_image_manager.joinPath(map_image_manager.cacheDirectory(), storedFile);
+			let map_image_manager = FileManager.iCloud();
+			let map_image_file = map_image_manager.joinPath(map_image_manager.documentsDirectory(), storedFile);
 			if (map_image_manager.fileExists(map_image_file)) {
 				// load old map from disk
 				mapImage = await map_image_manager.readImage(map_image_file);
@@ -620,8 +620,8 @@ function drawErrorWidget(w, reason) {
 }
 
 async function fetchScooterDetail(token, sn) {
-	let fileManager = FileManager.local();
-	let file = fileManager.joinPath(fileManager.cacheDirectory(), 'niu_detail_' + sn + '.dat');
+	let fileManager = FileManager.iCloud();
+	let file = fileManager.joinPath(fileManager.documentsDirectory(), 'niu_data/niu_detail_' + sn + '.dat');
 	if (fileManager.fileExists(file))
 		return JSON.parse(fileManager.readString(file));
 	else {
@@ -651,8 +651,8 @@ async function fetchInfoData(token) {
 }
 
 async function loadLastTrackData(token, sn, from_local = true) {
-	let fileManager = FileManager.local();
-	let file = fileManager.joinPath(fileManager.cacheDirectory(), 'niu_last_track_' + sn + '.dat');
+	let fileManager = FileManager.iCloud();
+	let file = fileManager.joinPath(fileManager.documentsDirectory(), 'niu_data/niu_last_track_' + sn + '.dat');
 	if (from_local && fileManager.fileExists(file))
 	{
 		return JSON.parse(fileManager.readString(file));
