@@ -581,12 +581,6 @@ function presentWidget(widget) {
 }
 
 async function createWidget(info_data, colors) {
-	let td_folder = FileManager.iCloud()
-	folder_file = td_folder.joinPath(td_folder.documentsDirectory(), "niu_data");
-	if (!td_folder.isDirectory(folder_file)) {
-		td_folder.createDirectory(folder_file);
-	}
-
 	let w = new ListWidget()
 	theme.init();
 	await theme.draw(w, info_data, colors);
@@ -629,12 +623,16 @@ async function fetchScooterDetail(token, sn) {
 		req.method = 'GET';
 		req.headers = {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);deviceName=Vxider-iPhone;timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+			'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
 			'token': token
 		};
 		var json = await req.loadJSON();
-		fileManager.writeString(file, JSON.stringify(json));
-		return json;
+		if (json.status == 0)
+		{
+			fileManager.writeString(file, JSON.stringify(json));
+			return json;
+		}
+		return null;
 	}
 }
 
@@ -668,14 +666,18 @@ async function loadLastTrackData(token, sn, from_local = true) {
 		};
 		req.body = '{"sn":"' + sn + '","index":"0","token":"' + token + '","pagesize":1}';
 		var json = await req.loadJSON();
-		fileManager.writeString(file, JSON.stringify(json));
-		return json;
+		if (json.status == 0)
+		{
+			fileManager.writeString(file, JSON.stringify(json));
+			return json;
+		}
+		return null;
 	}
 }
 
 async function loadToken(force = false) {
 	let tokenManager = FileManager.iCloud()
-	token_file = tokenManager.joinPath(tokenManager.documentsDirectory(), "niu_data/token.dat");
+	token_file = tokenManager.joinPath(tokenManager.documentsDirectory(), "niu_data/token_" + username + ".dat");
 
 	if (force || !tokenManager.fileExists(token_file)) {
 		var request_ = await new Request('https://account.niu.com/v3/api/oauth2/token');
@@ -755,6 +757,11 @@ function parseLastTrackData(json) {
 }
 
 async function loadNiuData() {
+	let config_folder = FileManager.iCloud()
+	folder_file = config_folder.joinPath(config_folder.documentsDirectory(), "niu_data/");
+	if (!config_folder.fileExists(folder_file)) {
+		config_folder.createDirectory(folder_file);
+	}
 
 	if (username != null && username != "" && password != null && password != "" && sn != null && sn != "") {
 		try {
