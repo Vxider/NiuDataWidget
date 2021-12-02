@@ -256,13 +256,11 @@ function addMapArea() { // add the map area for medium size.
 				// load old map from disk
 				map_image_manager.downloadFileFromiCloud(map_image_file);
 				mapImage = await map_image_manager.readImage(map_image_file);
-				console.log("Read Map From Disk!");
 			}
 			if (mapImage == null) {
 				mapImage = await getMapImage(roundedLong, roundedLat, mapZoomLevel, colors);
 				// write image to disk for future use
 				map_image_manager.writeImage(map_image_file, mapImage);
-				console.log("Map Written To Disk");
 			}
 
 			column_right.topAlignContent();
@@ -792,9 +790,6 @@ async function loadNiuData() {
 			var scooterDetailJSON = await fetchScooterDetail(token, sn);
 			if (scooterDetailJSON == null)
 				return "NETWORK EXCEPTION";
-
-			console.log("last_track:" + JSON.stringify(lastTrackJSON));
-			console.log("scooter_detail:" + JSON.stringify(scooterDetailJSON));
 
 			parseInfoData(infoJson);
 			parseLastTrackData(lastTrackJSON);
