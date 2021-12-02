@@ -624,7 +624,7 @@ async function fetchScooterDetail(token, sn) {
 	if (fileManager.fileExists(file))
 	{
 		fileManager.downloadFileFromiCloud(file);
-		return JSON.parse(fileManager.readString(file));
+		return [true, JSON.parse(fileManager.readString(file))];
 	}
 	else {
 		var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
@@ -638,9 +638,9 @@ async function fetchScooterDetail(token, sn) {
 		if (json.status == 0)
 		{
 			fileManager.writeString(file, JSON.stringify(json));
-			return json;
+			return [true, json];
 		}
-		return null;
+		return [false, json];
 	}
 }
 
@@ -652,8 +652,11 @@ async function fetchInfoData(token) {
 		'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
 		'token': token
 	};
-	var data = await req.loadJSON();
-	return data;
+	var json= await req.loadJSON();
+	if (json.status == 0)
+		return [true, json];
+	else
+		return [false, json];
 }
 
 async function loadLastTrackData(token, sn, from_local = true) {
@@ -662,7 +665,7 @@ async function loadLastTrackData(token, sn, from_local = true) {
 	if (from_local && fileManager.fileExists(file))
 	{
 		fileManager.downloadFileFromiCloud(file);
-		return JSON.parse(fileManager.readString(file));
+		return [true, JSON.parse(fileManager.readString(file))];
 	}
 	else
 	{
@@ -678,9 +681,9 @@ async function loadLastTrackData(token, sn, from_local = true) {
 		if (json.status == 0)
 		{
 			fileManager.writeString(file, JSON.stringify(json));
-			return json;
+			return [true, json];
 		}
-		return null;
+		return [false, json];
 	}
 }
 
@@ -700,15 +703,15 @@ async function loadToken(force = false) {
 		if (json.status == 0) {
 			var token = json.data.token.access_token;
 			tokenManager.writeString(token_file, token)
-			return token;
+			return [true, token];
 		}
 		else {
-			return '';
+			return [false, JSON.stringify(json)];
 		}
 	}
 	else {
 		tokenManager.downloadFileFromiCloud(token_file);
-		return tokenManager.readString(token_file);
+		return [true, tokenManager.readString(token_file)];
 	}
 }
 
@@ -775,25 +778,34 @@ async function loadNiuData() {
 	if (username != null && username != "" && password != null && password != "" && sn != null && sn != "") {
 		try {
 			var token = await loadToken();
-			var infoJson = await fetchInfoData(token);
-			if (infoJson != null && infoJson.status == 1131) {
+			if (!token[0])
 				token = await loadToken(true);
-				infoJson = await fetchInfoData(token);
+			if (!token[0])
+				return token[1];
+			var infoJson = await fetchInfoData(token[1]);
+			if (!infoJson[0])
+			{
+				token = await loadToken(true);
+				return infoJson[1];
 			}
-			if (infoJson == null)
-				return "NETWORK EXCEPTION";
 
-			var lastTrackJSON = await loadLastTrackData(token, sn, (infoJson.data.isAccOn == 1));
-			if (lastTrackJSON == null)
-				return "NETWORK EXCEPTION";
+			var lastTrackJSON = await loadLastTrackData(token[1], sn, (infoJson[1].data.isAccOn == 1));
+			if (!lastTrackJSON[0])
+			{
+				token = await loadToken(true);
+				return lastTrackJSON[1];
+			}
 
-			var scooterDetailJSON = await fetchScooterDetail(token, sn);
-			if (scooterDetailJSON == null)
-				return "NETWORK EXCEPTION";
+			var scooterDetailJSON = await fetchScooterDetail(token[1], sn);
+			if (!scooterDetailJSON[0])
+			{
+				token = await loadToken(true);
+				return scooterDetailJSON[1];
+			}
 
-			parseInfoData(infoJson);
-			parseLastTrackData(lastTrackJSON);
-			parseScooterDetail(scooterDetailJSON);
+			parseInfoData(infoJson[1]);
+			parseLastTrackData(lastTrackJSON[1]);
+			parseScooterDetail(scooterDetailJSON[1]);
 		} catch (e) {
 			// offline, grab the backup copy
 			return e;
