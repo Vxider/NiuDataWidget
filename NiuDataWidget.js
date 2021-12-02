@@ -195,9 +195,15 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 			let configFile = imageManager.joinPath(imageManager.documentsDirectory(), configFilePath);
 			let imageFile = imageManager.joinPath(imageManager.documentsDirectory(), imageFilePath);
 			if (imageManager.fileExists(configFile))
+			{
+				imageManager.downloadFileFromiCloud(configFile);
 				last_track_id = imageManager.readString(configFile);
+			}
 			if (last_track_id == last_track_data.trackId && imageManager.fileExists(imageFile))
+			{
+				imageManager.downloadFileFromiCloud(imageFile);
 				mapImage = await imageManager.readImage(imageFile);
+			}
 			else
 			{
 				var req = new Request(last_track_data.track_thumb);
@@ -248,6 +254,7 @@ function addMapArea() { // add the map area for medium size.
 			let map_image_file = map_image_manager.joinPath(map_image_manager.documentsDirectory(), storedFile);
 			if (map_image_manager.fileExists(map_image_file)) {
 				// load old map from disk
+				map_image_manager.downloadFileFromiCloud(map_image_file);
 				mapImage = await map_image_manager.readImage(map_image_file);
 				console.log("Read Map From Disk!");
 			}
@@ -617,7 +624,10 @@ async function fetchScooterDetail(token, sn) {
 	let fileManager = FileManager.iCloud();
 	let file = fileManager.joinPath(fileManager.documentsDirectory(), 'niu_data/niu_detail_' + sn + '.dat');
 	if (fileManager.fileExists(file))
+	{
+		fileManager.downloadFileFromiCloud(file);
 		return JSON.parse(fileManager.readString(file));
+	}
 	else {
 		var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
 		req.method = 'GET';
@@ -653,6 +663,7 @@ async function loadLastTrackData(token, sn, from_local = true) {
 	let file = fileManager.joinPath(fileManager.documentsDirectory(), 'niu_data/niu_last_track_' + sn + '.dat');
 	if (from_local && fileManager.fileExists(file))
 	{
+		fileManager.downloadFileFromiCloud(file);
 		return JSON.parse(fileManager.readString(file));
 	}
 	else
