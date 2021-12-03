@@ -552,23 +552,6 @@ theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
 	}
 }
 
-// Start processing our code (load the scooter data, then render)
-let response = await loadNiuData()
-
-addMapArea(); // after loading scooter data we can decide if we can display the map
-addLastTrackMapArea();
-
-if (response == "ok") {
-	let widget = await createWidget(info_data, colors);
-	Script.setWidget(widget);
-	presentWidget(widget);
-	Script.complete();
-} else {
-	let widget = errorWidget(response);
-	Script.setWidget(widget);
-	presentWidget(widget);
-	Script.complete();
-}
 
 function presentWidget(widget) {
 	switch (debug_size) {
@@ -715,6 +698,22 @@ async function loadToken(force = false) {
 	}
 }
 
+async function action(type, token) {
+	var req = new Request('https://app-api.niu.com/v5/cmd/creat');
+	req.method = 'POST';
+	req.headers = {
+		'Content-Type': 'application/json',
+		'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+		'token': token
+	};
+	req.body = '{"token":"' + token + '","sn":"' + sn + '", "type":"' + type + '"}';
+	var json = await req.loadJSON();
+	if (json.status == 0)
+		return [true, json];
+	else
+		return [false, json];
+}
+
 function parseInfoData(json) {
 	info_data.usable_battery_level = json.data.batteries.compartmentA.batteryCharging;
 	info_data.battery_connected = json.data.batteries.compartmentA.isConnected;
@@ -856,4 +855,40 @@ function getSampleData() {
 		"gps": 0,
 		"gsm": 0
 	}
+}
+
+switch (args.plainTexts[0]) {
+	case "fortification_on":
+	case "fortification_off":
+	case "acc_on":
+	case "acc_off":
+		var token = await loadToken();
+		if (!token[0])
+			var token = await loadToken(true);
+		var actionJson = await action(args.plainTexts, token[1]);
+		if (!actionJson[0])
+			token = await loadToken(true);
+		return actionJson[1];
+	case undefined:
+		// Widget
+		let response = await loadNiuData()
+		if (response == "ok") {
+			addMapArea();
+			addLastTrackMapArea();
+			let widget = await createWidget(info_data, colors);
+			Script.setWidget(widget);
+			presentWidget(widget);
+			Script.complete();
+		} else {
+			let widget = errorWidget(response);
+			Script.setWidget(widget);
+			presentWidget(widget);
+			Script.complete();
+		}
+		break;
+	default:
+		let widget = errorWidget("Unknown args: " + args.plainTexts);
+		Script.setWidget(widget);
+		presentWidget(widget);
+		Script.complete();
 }

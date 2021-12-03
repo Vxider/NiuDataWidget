@@ -2,10 +2,11 @@
 
 [[English](README.md)] [[中文](README_CN.md)]
 
-A Scriptable widget to display NIU electric scooter data on your iPhone. 
+A Scriptable widget to display and control NIU electric scooter data on your iPhone. 
 
 <img src="screenshots/screen_001.jpg" width="400" />
-<img src="screenshots/screen_002.jpg" width="400" />
+<img src="screenshots/screen_002.jpg" width="200" />
+<img src="screenshots/screen_003.jpg" width="400" />
 
 ## Usage
 ### Install
@@ -14,6 +15,11 @@ A Scriptable widget to display NIU electric scooter data on your iPhone.
 * Download the `NiuDataWidget.js` file to your `iCloud/Scriptable` folder (or create a new widget in the scriptable app).
 * Fill `username`, `password`, and `sn` in `NiuDataWidget.js`
     * Set password to `md5(password)`.
+* Use the following shortcuts to enable remote control
+    * [ACC ON](https://www.icloud.com/shortcuts/25ea79d45bb84aa1a9b45a3c70ac61a6)
+    * [ACC OFF](https://www.icloud.com/shortcuts/77fb596c05214521a0faa687e3f113b2)
+    * [Fortification ON](https://www.icloud.com/shortcuts/003cff2ec216426da2275722a342d702)
+    * [Fortification OFF](https://www.icloud.com/shortcuts/3f09f3a99f21421ca95fa479d9df849b)
 
 ```
 var username = "";
@@ -44,6 +50,7 @@ This widget support:
 * time since the data was retreived from the car
 * map location of the current position
 * last track information
+* Remote control
 
 ## Special Thanks
 

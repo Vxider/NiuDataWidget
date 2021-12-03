@@ -2,10 +2,11 @@
 
 [[English](README.md)] [[中文](README_CN.md)]
 
-Scriptable小牛电动车信息显示小组件
+Scriptable小牛电动车小组件
 
 <img src="screenshots/screen_001.jpg" width="400" />
-<img src="screenshots/screen_002.jpg" width="400" />
+<img src="screenshots/screen_002.jpg" width="200" />
+<img src="screenshots/screen_003.jpg" width="400" />
 
 ## 用法
 ### 安装
@@ -15,6 +16,11 @@ Scriptable小牛电动车信息显示小组件
 * 设置`NiuDataWidget.js`文件中的`username`、 `password`、及`sn`字段.
     * `sn`字段在`小牛app->我的设备->配置信息`里查看
     * `password`字段需填写MD5加密后的值(可使用[在线MD5加密工具](http://www.md5.cz/)生成).
+* 车辆遥控功能，需添加以下快捷指令
+    * [启动](https://www.icloud.com/shortcuts/25ea79d45bb84aa1a9b45a3c70ac61a6)
+    * [关闭](https://www.icloud.com/shortcuts/77fb596c05214521a0faa687e3f113b2)
+    * [锁定](https://www.icloud.com/shortcuts/003cff2ec216426da2275722a342d702)
+    * [解锁](https://www.icloud.com/shortcuts/3f09f3a99f21421ca95fa479d9df849b)
 
 ```
 var username = "";
@@ -45,6 +51,7 @@ var sn = "";
 * 上次更新时间
 * 车辆位置信息地图显示
 * 最近旅程信息显示
+* 车辆遥控（需中控支持）
 
 ## 特别感谢
 
