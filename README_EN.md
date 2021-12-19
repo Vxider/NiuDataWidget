@@ -38,6 +38,9 @@ var sn = "";
 * If you want the map area to display the last track, config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = true`
     * `var hide_map = true`
+* Dark theme
+    * Automatically switch to the dark theme when the device is using a dark appearance.
+      Set `is_dark_mode_working = false` to always use white theme.
 
 ## Features
 
