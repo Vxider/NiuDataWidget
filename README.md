@@ -39,6 +39,8 @@ var sn = "";
 * 地图位置如需显示最近旅程，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = true`
     * `var hide_map = true`
+* 黑色主题
+    * 默认支持随系统切换主题，如始终希望使用白色主题，请设置`is_dark_mode_working = false`
 
 ## 功能
 

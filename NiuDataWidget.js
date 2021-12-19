@@ -15,7 +15,7 @@
 	var password = "";
 	var sn = ""
 	var debug_size = "medium"; // which size should the widget try to run as when run through Scriptable. (small, medium, large)
-	var is_dark_mode_working = true;
+	var is_dark_mode_working = true; // always use white theme when setting to false
 }
 
 var mapKey = "";
