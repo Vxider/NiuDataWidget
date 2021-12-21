@@ -409,7 +409,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	let estimatedMileage = column_right.addStack();
 	estimatedMileage.layoutHorizontally();
 	estimatedMileage.addSpacer(null);
-	let estimatedMileageText = estimatedMileage.addStack().addText(Math.floor(info_data.battery_range) + "KM");
+	let estimatedMileageText = estimatedMileage.addStack().addText(Math.floor(info_data.battery_range) + "公里");
 	estimatedMileageText.font = Font.boldMonospacedSystemFont(19);
 	estimatedMileageText.textColor = new Color(colors.text.distance);
 	estimatedMileageText.rightAlignText();
@@ -518,7 +518,7 @@ theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
 	mapIcon.tintColor = new Color(colors.icons.default);
 
 	stack.addSpacer(2);
-	let distance = stack.addText((last_track_data.distance / 1000).toFixed(1) + 'KM')
+	let distance = stack.addText((last_track_data.distance / 1000).toFixed(1) + '公里')
 	distance.textColor = new Color(colors.text.primary);
 	distance.font = Font.systemFont(10)
 
@@ -531,7 +531,7 @@ theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
 	if(is_small)
 		var clock = stack.addText(Math.round(last_track_data.ridingTime / 60) + "m")
 	else
-		var clock = stack.addText(Math.round(last_track_data.ridingTime / 60) + "min")
+		var clock = stack.addText(Math.round(last_track_data.ridingTime / 60) + "分")
 	clock.textColor = new Color(colors.text.primary);
 	clock.font = Font.systemFont(10)
 
@@ -750,11 +750,11 @@ function parseInfoData(json) {
 	timeDiff = Math.round((Math.abs(now - lastUpdate)) / (1000 * 60))
 	if (timeDiff < 60) {
 		// been less than an hour since last update
-		info_data.last_contact = timeDiff + "m ago"
+		info_data.last_contact = timeDiff + "分钟前"
 	} else if (timeDiff < 1440) {
-		info_data.last_contact = Math.floor(timeDiff / 60) + "h ago"
+		info_data.last_contact = Math.floor(timeDiff / 60) + "小时前"
 	} else {
-		info_data.last_contact = Math.floor(timeDiff / 1440) + "d ago"
+		info_data.last_contact = Math.floor(timeDiff / 1440) + "天前"
 	}
 	if (timeDiff / 60 > 2) {
 		info_data.data_is_stale = true; // data is more than 2 hours old.
@@ -763,7 +763,7 @@ function parseInfoData(json) {
 
 function parseScooterDetail(json) {
 	info_data.scooter_name = json.data.scooter_name;
-	info_data.scooter_img = json.data.list_scooter_img;
+	info_data.scooter_img = json.data.index_scooter_img;
 }
 
 function parseLastTrackData(json) {
