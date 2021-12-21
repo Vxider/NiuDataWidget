@@ -45,7 +45,12 @@ var colors = {
 	}
 }
 
-if (Device.isUsingDarkAppearance() && is_dark_mode_working) {
+function isDarkMode() 
+{
+	return Device.isUsingDarkAppearance() && is_dark_mode_working;
+}
+
+if (isDarkMode()) {
 	colors.background = "#1E1E1E";
 	colors.text.distance = "#FFFFFF";
 	colors.text.primary = "#FFFFFF";
@@ -248,7 +253,10 @@ function addMapArea() { // add the map area for medium size.
 
 			roundedLat = Math.round(info_data.latitude * 2000) / 2000;
 			roundedLong = Math.round(info_data.longitude * 2000) / 2000;
-			storedFile = "niu_data/niu_widget_map_" + roundedLat * 2000 + "_" + roundedLong * 2000 + ".image";
+			if (isDarkMode())
+				storedFile = "niu_data/niu_widget_map_dark_" + roundedLat * 2000 + "_" + roundedLong * 2000 + ".image";
+			else
+				storedFile = "niu_data/niu_widget_map_" + roundedLat * 2000 + "_" + roundedLong * 2000 + ".image";
 
 			let map_image_manager = FileManager.iCloud();
 			let map_image_file = map_image_manager.joinPath(map_image_manager.documentsDirectory(), storedFile);
