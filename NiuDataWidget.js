@@ -815,7 +815,7 @@ async function loadNiuData() {
 			parseScooterDetail(scooterDetailJSON[1]);
 		} catch (e) {
 			// offline, grab the backup copy
-			return e;
+			return e.toString();
 		}
 	} else {
 		niu_data = getSampleData();
