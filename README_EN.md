@@ -31,13 +31,13 @@ var sn = "";
 * Get a [map API key from MapQuest](https://developer.mapquest.com/) and add it to your `NiuDataWidget.js` file.
 * If you do not want the map area, config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = false`
-    * `var hide_map = true`
+    * `var show_map = false`
 * If you want the map area to display the location, config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = false`
-    * `var hide_map = false`
+    * `var show_map = true`
 * If you want the map area to display the last track, config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = true`
-    * `var hide_map = true`
+    * `var show_map = false`
 * Dark theme
     * Automatically switch to the dark theme when the device is using a dark appearance.
       Set `is_dark_mode_working = false` to always use white theme.

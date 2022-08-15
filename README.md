@@ -32,13 +32,13 @@ var sn = "";
 * 获取[地图API key](https://developer.mapquest.com/)并填写于文件`NiuDataWidget.js`.
 * 无需显示地图信息，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = false`
-    * `var hide_map = true`
+    * `var show_map = false`
 * 地图位置如需显示车辆定位，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = false`
-    * `var hide_map = false`
+    * `var show_map = true`
 * 地图位置如需显示最近旅程，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = true`
-    * `var hide_map = true`
+    * `var show_map = false`
 * 黑色主题
     * 默认支持随系统切换主题，如始终希望使用白色主题，请设置`is_dark_mode_working = false`
 
