@@ -14,7 +14,7 @@ A Scriptable widget to display and control NIU electric scooter data on your iPh
 * Get Scriptable in the Apple App Store.
 * Download the `NiuDataWidget.js` file to your `iCloud/Scriptable` folder (or create a new widget in the scriptable app).
 * Fill `username`, `password`, and `sn` in `NiuDataWidget.js`
-    * Set password to `md5(password)`.
+    * Set `password` to `md5(your password)`.
 * Use the following shortcuts to enable remote control
     * [ACC ON](https://www.icloud.com/shortcuts/25ea79d45bb84aa1a9b45a3c70ac61a6)
     * [ACC OFF](https://www.icloud.com/shortcuts/77fb596c05214521a0faa687e3f113b2)
