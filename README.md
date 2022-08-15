@@ -33,10 +33,10 @@ var sn = "";
 * 无需显示地图信息，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = false`
     * `var show_map = false`
-* 地图位置如需显示车辆定位，在`NiuDataWidget.js`文件中设置
+* 地图位置如需显示车辆定位(需要“中尺寸”小组件)，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = false`
     * `var show_map = true`
-* 地图位置如需显示最近旅程，在`NiuDataWidget.js`文件中设置
+* 地图位置如需显示最近旅程(需要“中尺寸”小组件)，在`NiuDataWidget.js`文件中设置
     * `var show_last_track_map = true`
     * `var show_map = false`
 * 黑色主题

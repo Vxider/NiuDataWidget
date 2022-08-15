@@ -32,10 +32,10 @@ var sn = "";
 * If you do not want the map area, config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = false`
     * `var show_map = false`
-* If you want the map area to display the location, config the `NiuDataWidget.js` file as follows
+* If you want the map area to display the location (requires medium size widget), config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = false`
     * `var show_map = true`
-* If you want the map area to display the last track, config the `NiuDataWidget.js` file as follows
+* If you want the map area to display the last track (requires medium size widget), config the `NiuDataWidget.js` file as follows
     * `var show_last_track_map = true`
     * `var show_map = false`
 * Dark theme
