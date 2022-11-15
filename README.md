@@ -7,6 +7,7 @@ Scriptable小牛电动车小组件
 <img src="screenshots/screen_001.jpg" width="400" />
 <img src="screenshots/screen_002.jpg" width="200" />
 <img src="screenshots/screen_003.jpg" width="400" />
+<img src="screenshots/screen_004.png" width="400" />
 
 ## 用法
 ### 安装
@@ -45,6 +46,7 @@ var sn = "";
 ## 功能
 
 插件功能:
+* 锁屏电量显示（需iOS16）
 * 充电状态显示
 * 设防状态显示
 * 启动状态显示
