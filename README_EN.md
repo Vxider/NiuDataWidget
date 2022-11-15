@@ -17,6 +17,7 @@ A Scriptable widget to display and control NIU electric scooter data on your iPh
 * Fill `username`, `password`, and `sn` in `NiuDataWidget.js`
     * Set `password` to `md5(your password)`.
 * Use the following shortcuts to enable remote control
+    * [ACC TOGGLE](https://www.icloud.com/shortcuts/1c4369e67c5b43beb648c3a7ab10f65e)
     * [ACC ON](https://www.icloud.com/shortcuts/25ea79d45bb84aa1a9b45a3c70ac61a6)
     * [ACC OFF](https://www.icloud.com/shortcuts/77fb596c05214521a0faa687e3f113b2)
     * [Fortification ON](https://www.icloud.com/shortcuts/003cff2ec216426da2275722a342d702)

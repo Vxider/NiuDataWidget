@@ -960,6 +960,19 @@ switch (args.plainTexts[0]) {
 		if (!actionJson[0])
 			token = await loadToken(true);
 		return actionJson[1];
+	case "acc_toggle":
+		await loadNiuData()
+		var command = "acc_off";
+		if (info_data.scooter_state == "fortification_on" || info_data.scooter_state == "acc_off")
+			command = "acc_on";
+
+		var token = await loadToken();
+		if (!token[0])
+			var token = await loadToken(true);
+		var actionJson = await action(command, token[1]);
+		if (!actionJson[0])
+			token = await loadToken(true);
+		return actionJson[1];
 	case undefined:
 		let response = await loadNiuData()
 		if (config.runsInAccessoryWidget)
