@@ -32,7 +32,8 @@ var colors = {
 	battery: {
 		charging: "#ddbb22",
 		centreCtrl: "#E74C3C",
-		default: "#2BD82E"
+		default: "#2BD82E",
+		low: "#E74C3C"
 	},
 	icons: {
 		default: "#33333399",
@@ -440,7 +441,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		batteryImageContext.setFillColor(new Color(colors.background));
 		batteryImageContext.fillRect(new Rect(0, 0, battery_image.size.width, battery_image.size.height))
 		batteryImageContext.drawImageAtPoint(battery_image, new Point(0, 0))
-		batteryImageContext.setFillColor(new Color(colors.battery.default));
+		batteryImageContext.setFillColor(new Color(info_data.usable_battery_level > 20 ? colors.battery.default : colors.battery.low));
 
 		var bar_width = (info_data.usable_battery_level / 100) * (battery_image.size.width - 28);
 		batteryImageContext.fillRect(new Rect(10, 8, bar_width, battery_image.size.height - 17))
@@ -467,7 +468,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	if (info_data.is_charging)
 		batteryText.textColor = new Color(colors.battery.charging)
 	else if (info_data.battery_connected)
-		batteryText.textColor = new Color(colors.battery.default)
+		batteryText.textColor = new Color(info_data.usable_battery_level > 20 ? colors.battery.default : colors.battery.low);
 	else
 		batteryText.textColor = new Color(colors.battery.centreCtrl)
 
