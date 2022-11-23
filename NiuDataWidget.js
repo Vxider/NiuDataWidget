@@ -591,8 +591,28 @@ async function createLockScreenWidget(usable_battery_level) {
 	let req = new Request(niu_icon)
 	let iconImage = await req.loadImage()
 	let progressStack = await progressCircle(w, usable_battery_level)
-	let sf = progressStack.addImage(iconImage)
-	sf.imageSize = new Size(25,25)
+
+	let stack = progressStack.addStack();
+	stack.layoutVertically();
+
+	let text_stack = stack.addStack();
+	text_stack.layoutHorizontally();
+	text_stack.centerAlignContent();
+
+	text_stack.addSpacer()
+	let text = text_stack.addText(usable_battery_level.toString())
+	text.font = Font.semiboldSystemFont(20)
+	text_stack.addSpacer()
+
+	let image_stack = stack.addStack();
+	image_stack.layoutHorizontally();
+	image_stack.centerAlignContent();
+
+	image_stack.addSpacer()
+	let sf = image_stack.addImage(iconImage)
+	sf.imageSize = new Size(10,10)
+	image_stack.addSpacer()
+
 	return w
 }
 
