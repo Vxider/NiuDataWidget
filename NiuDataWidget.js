@@ -627,8 +627,8 @@ async function progressCircle(
   value = 50,
   colour = "hsl(120, 100%, 50%)",
   background = "hsl(0, 100%, 50%)",
-  size = 56,
-  barWidth = 4.5
+  size = 60,
+  barWidth = 4.4
 ) {
   if (value > 1) {
     value /= 100
