@@ -27,6 +27,7 @@ var colors = {
 	background_status: "#ffffff33",
 	text: {
 		primary: "#333333cc",
+		status: "#737782",
 		distance: "#333333"
 	},
 	battery: {
@@ -80,6 +81,7 @@ const niu_icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABHsAAAOsCAYAAADa
 
 var info_data = {
 	scooter_name: '',
+	circle_color: '',
 	source: "Unknown",
 	last_contact: "",
 	data_is_stale: false, // if the data is especially old (> 2 hours)
@@ -302,7 +304,7 @@ theme.drawScooterStatus = async function (widget, info_data, colors) {
 	column_left.layoutVertically();
 
 	let scooterName = column_left.addText(info_data.scooter_name);
-	scooterName.textColor = new Color(colors.text.primary);
+	scooterName.textColor = new Color(colors.text.status);
 	scooterName.centerAlignText()
 	scooterName.font = Font.semiboldSystemFont(12)
 	scooterName.minimumScaleFactor = 0.5
@@ -320,7 +322,7 @@ theme.drawScooterStatus = async function (widget, info_data, colors) {
 
 	let gpsLabel1 = signal_info.addText(GPStext1)
 	gpsLabel1.font = Font.boldMonospacedSystemFont(8)
-	gpsLabel1.textColor = new Color(colors.text.primary);
+	gpsLabel1.textColor = new Color(colors.text.status);
 	let gpsLabel2 = signal_info.addText(GPStext2)
 	gpsLabel2.font = Font.boldMonospacedSystemFont(8)
 	gpsLabel2.textColor = new Color(colors.text.primary);
@@ -335,10 +337,10 @@ theme.drawScooterStatus = async function (widget, info_data, colors) {
 
 	let gsmLabel1 = signal_info.addText(' ' + GSMtext1);
 	gsmLabel1.font = Font.boldMonospacedSystemFont(8);
-	gsmLabel1.textColor = new Color(colors.text.primary);
+	gsmLabel1.textColor = new Color(colors.text.status);
 	let gsmLabel2 = signal_info.addText(GSMtext2);
 	gsmLabel2.font = Font.boldMonospacedSystemFont(8);
-	gsmLabel2.textColor = new Color(colors.text.primary);
+	gsmLabel2.textColor = new Color(colors.text.status);
 	gsmLabel2.textOpacity = 0.3
 
 	stack.addSpacer(null)
@@ -401,35 +403,30 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		imageFileManager.writeImage(imageFile, imageContent);
 	}
 
-	let imageStack = stack.addImage(imageContent);
-
-	stack.addSpacer(null);
-
 	var column_right = stack.addStack();
 	column_right.layoutVertically();
 	column_right.topAlignContent();
 
 	let estimatedMileage = column_right.addStack();
 	estimatedMileage.layoutHorizontally();
-	estimatedMileage.addSpacer(null);
 	let estimatedMileageText = estimatedMileage.addStack().addText(Math.floor(info_data.battery_range) + "KM");
-	estimatedMileageText.font = Font.boldMonospacedSystemFont(19);
+	estimatedMileageText.font = Font.boldMonospacedSystemFont(20);
 	estimatedMileageText.textColor = new Color(colors.text.distance);
-	estimatedMileageText.rightAlignText();
+	estimatedMileageText.leftAlignText();
+	estimatedMileage.addSpacer(null);
 
 	column_right.addSpacer(3);
 
 	let battery = column_right.addStack();
 	battery.layoutHorizontally();
 	battery.centerAlignContent();
-	battery.addSpacer(null);
 	if (info_data.is_charging)
 	{
 		var battery_image = SFSymbol.named("battery.100.bolt").image;
 		var image_stack = battery.addImage(battery_image);
 		image_stack.tintColor = new Color(colors.battery.charging);
 		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
-		image_stack.rightAlignImage();
+		image_stack.leftAlignImage();
 	}
 	else if (info_data.battery_connected)
 	{
@@ -448,7 +445,7 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 
 		var image_stack = battery.addImage(batteryImageContext.getImage());
 		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
-		image_stack.rightAlignImage();
+		image_stack.leftAlignImage();
 	}
 	else
 	{
@@ -456,21 +453,23 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 		var image_stack = battery.addImage(battery_image);
 		image_stack.tintColor = new Color(colors.battery.centreCtrl);
 		image_stack.imageSize = scaleImage(image_stack.image.size, 10)
-		image_stack.rightAlignImage();
+		image_stack.leftAlignImage();
 	}
 	
 	if (info_data.battery_connected)
 		var batteryText = battery.addStack().addText(' ' + Math.floor(info_data.usable_battery_level) + "%");
 	else
 		var batteryText = battery.addStack().addText(' ' + Math.floor(info_data.centre_battery_level) + "%");
-	batteryText.font = Font.boldMonospacedSystemFont(12);
-	batteryText.rightAlignText();
+	batteryText.font = Font.boldMonospacedSystemFont(14);
+	batteryText.leftAlignText();
 	if (info_data.is_charging)
 		batteryText.textColor = new Color(colors.battery.charging)
 	else if (info_data.battery_connected)
 		batteryText.textColor = new Color(info_data.usable_battery_level > 20 ? colors.battery.default : colors.battery.low);
 	else
 		batteryText.textColor = new Color(colors.battery.centreCtrl)
+
+	battery.addSpacer(null);
 
 	column_right.addSpacer(3);
 
@@ -479,7 +478,6 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 
 	let location = column_right.addStack();
 	location.layoutHorizontally();
-	location.addSpacer(null);
 
 	let mapIcon = location.addImage(SFSymbol.named("location.fill").image);
 	mapIcon.imageSize = scaleImage(mapIcon.image.size, 8)
@@ -490,23 +488,43 @@ theme.drawScooterInfo = async function (widget, info_data, colors) {
 	let location_stack = location.addText(location_text);
 	location_stack.font = Font.systemFont(8);
 	location_stack.textColor = new Color(colors.text.primary);
-	location_stack.rightAlignText();
+	location_stack.leftAlignText();
+
+	location.addSpacer(null);
 
 	column_right.addSpacer(null);
 
 	if (info_data.last_contact.length > 0) {
 		let lastUpdate = column_right.addStack();
 		lastUpdate.layoutHorizontally();
-		lastUpdate.addSpacer(null);
 		let lastUpdateText = lastUpdate.addStack().addText(info_data.last_contact)
-		lastUpdateText.textColor = new Color(colors.text.primary);
-		lastUpdateText.textOpacity = 0.6
+		lastUpdateText.textColor = new Color(colors.text.status);
 		lastUpdateText.font = Font.systemFont(8)
-		lastUpdateText.rightAlignText()
+		lastUpdateText.leftAlignText()
+		lastUpdate.addSpacer(null);
 	}
 
 	column_right.addSpacer(1);
 
+	stack.addSpacer(null);
+
+	let scooter_img_context = new DrawContext()
+	var canvSize = 200;
+	canvWidth = 45;
+
+	scooter_img_context.opaque = true
+	scooter_img_context.setFillColor(new Color(colors.background));
+	scooter_img_context.fillRect(new Rect(0, 0, scooter_img_context.size.width, scooter_img_context.size.height))
+
+	bgr = new Rect(canvSize * 0.11, -canvSize * 0.15, canvSize * 1.1, canvSize * 1.1);
+	scooter_img_context.setStrokeColor(new Color(info_data.circle_color));
+	scooter_img_context.setLineWidth(canvWidth);
+	scooter_img_context.strokeEllipse(bgr);
+  
+	const canvLogoRect = new Rect(canvSize * 0.1, - canvSize * 0.1, canvSize * 1.2,canvSize * 1.2);
+	scooter_img_context.drawImageInRect(imageContent, canvLogoRect)
+
+	stack.addImage(scooter_img_context.getImage());
 }
 
 theme.drawLastTrack = function (widget, last_track_data, colors, is_small) {
@@ -867,7 +885,13 @@ function parseInfoData(json) {
 
 function parseScooterDetail(json) {
 	info_data.scooter_name = json.data.scooter_name;
-	info_data.scooter_img = json.data.list_scooter_img;
+	info_data.scooter_img = json.data.index_scooter_img;
+	if (info_data.scooter_state == "acc_on")
+		info_data.circle_color = "#28F67E";
+	else if (isDarkMode())
+		info_data.circle_color = json.data.light_theme.circle_color;
+	else
+		info_data.circle_color = json.data.dark_theme.circle_color;
 }
 
 function parseLastTrackData(json) {
