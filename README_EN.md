@@ -5,10 +5,10 @@
 A Scriptable widget to display and control NIU electric scooter data on your iPhone. 
 
 <img src="screenshots/screen_001.png" width="400" />
-<img src="screenshots/screen_002.png" width="200" />
-<img src="screenshots/screen_003.jpeg" width="400" />
+<img src="screenshots/screen_002.png" width="400" />
+<img src="screenshots/screen_003.jpeg" width="200" />
 <img src="screenshots/screen_004.jpg" width="400" />
-<img src="screenshots/screen_005.jpg" width="400" />
+<img src="screenshots/screen_005.jpeg" width="400" />
 
 ## Usage
 ### Install
