@@ -9,6 +9,7 @@ A Scriptable widget to display and control NIU electric scooter data on your iPh
 <img src="screenshots/screen_003.jpeg" width="200" />
 <img src="screenshots/screen_004.jpg" width="400" />
 <img src="screenshots/screen_005.jpeg" width="400" />
+<img src="screenshots/screen_006.jpeg" width="400" />
 
 ## Usage
 ### Install

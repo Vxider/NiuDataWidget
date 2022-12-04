@@ -9,6 +9,7 @@ Scriptable小牛电动车小组件
 <img src="screenshots/screen_003.jpeg" width="200" />
 <img src="screenshots/screen_004.jpg" width="400" />
 <img src="screenshots/screen_005.jpeg" width="400" />
+<img src="screenshots/screen_006.jpeg" width="400" />
 
 ## 用法
 ### 安装
