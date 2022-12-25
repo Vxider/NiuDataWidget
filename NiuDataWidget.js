@@ -23,7 +23,7 @@ var useGoogleMaps = false;
 
 // set up all the colors we want to use
 var colors = {
-	background: "#dddddd",
+	background: "#ffffff",
 	background_status: "#ffffff33",
 	text: {
 		primary: "#333333cc",
@@ -54,6 +54,7 @@ function isDarkMode()
 
 if (isDarkMode()) {
 	colors.background = "#1E1E1E";
+	colors.background_status = "#dddddd88";
 	colors.text.distance = "#FFFFFF";
 	colors.text.primary = "#FFFFFF";
 	colors.icons.default = "#FFFFFF";
@@ -878,9 +879,9 @@ function parseScooterDetail(json) {
 	if (info_data.scooter_state == "acc_on")
 		info_data.circle_color = "#28F67E";
 	else if (isDarkMode())
-		info_data.circle_color = json.data.light_theme.circle_color;
+		info_data.circle_color = "#373C40";
 	else
-		info_data.circle_color = json.data.dark_theme.circle_color;
+		info_data.circle_color = "#eeeeee"
 }
 
 function parseLastTrackData(json) {
