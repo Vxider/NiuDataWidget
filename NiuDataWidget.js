@@ -732,29 +732,18 @@ async function progressCircle(
 }
 
 async function fetchScooterDetail(token, sn) {
-	let fileManager = FileManager.iCloud();
-	let file = fileManager.joinPath(fileManager.documentsDirectory(), 'niu_data/niu_detail_' + sn + '.dat');
-	if (fileManager.fileExists(file))
-	{
-		fileManager.downloadFileFromiCloud(file);
-		return [true, JSON.parse(fileManager.readString(file))];
-	}
-	else {
-		var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
-		req.method = 'GET';
-		req.headers = {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
-			'token': token
-		};
-		var json = await req.loadJSON();
-		if (json.status == 0)
-		{
-			fileManager.writeString(file, JSON.stringify(json));
-			return [true, json];
-		}
+	var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
+	req.method = 'GET';
+	req.headers = {
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+		'token': token
+	};
+	var json = await req.loadJSON();
+	if (json.status == 0)
+		return [true, json];
+	else
 		return [false, json];
-	}
 }
 
 async function fetchInfoData(token) {
