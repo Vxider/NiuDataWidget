@@ -19,12 +19,13 @@ Scriptable小牛电动车小组件
 * 设置`NiuDataWidget.js`文件中的`username`、 `password`、及`sn`字段.
     * `sn`字段在`小牛app->我的设备->配置信息`里查看
     * `password`字段需填写MD5加密后的值(可使用[在线MD5加密工具](https://www.md5hashgenerator.com)生成).
-* 车辆遥控功能，需添加以下快捷指令
+* 车辆遥控功能，可添加以下快捷指令
     * [一键启停](https://www.icloud.com/shortcuts/1c4369e67c5b43beb648c3a7ab10f65e)
     * [启动](https://www.icloud.com/shortcuts/25ea79d45bb84aa1a9b45a3c70ac61a6)
     * [关闭](https://www.icloud.com/shortcuts/77fb596c05214521a0faa687e3f113b2)
     * [锁定](https://www.icloud.com/shortcuts/003cff2ec216426da2275722a342d702)
     * [解锁](https://www.icloud.com/shortcuts/3f09f3a99f21421ca95fa479d9df849b)
+    * [车辆信息](https://www.icloud.com/shortcuts/019e8ff616d24f5696f315c52b9ccda3)
 
 ```
 var username = "";

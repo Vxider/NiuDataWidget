@@ -24,6 +24,7 @@ A Scriptable widget to display and control NIU electric scooter data on your iPh
     * [ACC OFF](https://www.icloud.com/shortcuts/77fb596c05214521a0faa687e3f113b2)
     * [Fortification ON](https://www.icloud.com/shortcuts/003cff2ec216426da2275722a342d702)
     * [Fortification OFF](https://www.icloud.com/shortcuts/3f09f3a99f21421ca95fa479d9df849b)
+    * [Scooter INFO](https://www.icloud.com/shortcuts/019e8ff616d24f5696f315c52b9ccda3)
 
 ```
 var username = "";

@@ -1008,6 +1008,18 @@ switch (args.plainTexts[0]) {
 		if (!actionJson[0])
 			token = await loadToken(true);
 		return actionJson[1];
+	case "scooter_info":
+		await loadNiuData()
+		const address = await Location.reverseGeocode(info_data.latitude, info_data.longitude);
+		var location_text = address[0].name;
+
+		return `
+GPS: ${info_data.gps}
+GSM: ${info_data.gsm}
+估计里程: ${info_data.battery_range}KM
+电池电量: ${info_data.usable_battery_level}％
+中控电量: ${info_data.centre_battery_level}％
+车辆位置: ${location_text}`;
 	case undefined:
 		let response = await loadNiuData()
 		if (config.runsInAccessoryWidget)
