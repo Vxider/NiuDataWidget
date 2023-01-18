@@ -85,7 +85,6 @@ var info_data = {
 	circle_color: '',
 	source: "Unknown",
 	last_contact: "",
-	data_is_stale: false, // if the data is especially old (> 2 hours)
 	usable_battery_level: -1,
 	centre_battery_level: -1,
 	battery_range: -1,
@@ -857,20 +856,9 @@ function parseInfoData(json) {
 	info_data.lastTrack_ridingTime = json.data.lastTrack.ridingTime;
 	info_data.lastTrack_distance = json.data.lastTrack.distance;
 
-	let lastUpdate = new Date(json.data.time)
-	let now = new Date()
-	timeDiff = Math.round((Math.abs(now - lastUpdate)) / (1000 * 60))
-	if (timeDiff < 60) {
-		// been less than an hour since last update
-		info_data.last_contact = timeDiff + "m ago"
-	} else if (timeDiff < 1440) {
-		info_data.last_contact = Math.floor(timeDiff / 60) + "h ago"
-	} else {
-		info_data.last_contact = Math.floor(timeDiff / 1440) + "d ago"
-	}
-	if (timeDiff / 60 > 2) {
-		info_data.data_is_stale = true; // data is more than 2 hours old.
-	}
+	const timeFormatter = new DateFormatter();
+	timeFormatter.dateFormat = "HH:mm"
+	info_data.last_contact = timeFormatter.string(new Date(json.data.time));
 }
 
 function parseScooterDetail(json) {
@@ -964,7 +952,6 @@ function scaleImage(imageSize, height) {
 function getSampleData() {
 	return {
 		"scooter_name": 'Test',
-		"data_is_stale": false, // if the data is especially old (> 2 hours)
 		"usable_battery_level": 88,
 		"centre_battery_level": 100,
 		"battery_range": 104,
